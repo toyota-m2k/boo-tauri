@@ -1,6 +1,7 @@
 <script lang="ts">
   import Viewbox from "./Viewbox.svelte";
   import {createEventDispatcher} from 'svelte';
+  import {viewModel} from "./ViewModel";
 
   export let title: string;
 
@@ -11,6 +12,16 @@
   }
 
   let headerElem: HTMLElement;
+  let fitMode = viewModel.fitMode;
+  function nextFitMode() {
+    if($fitMode === 'fit') {
+      viewModel.fitMode.set('fill');
+    } else if($fitMode === 'fill'){
+      viewModel.fitMode.set('original');
+    } else {
+      viewModel.fitMode.set('fit');
+    }
+  }
 </script>
 
 
@@ -21,7 +32,7 @@
     <Viewbox text="{title}"/>
   </div>
   <nav>
-    <button>ボタン1</button>
+    <button on:click={nextFitMode}>{$fitMode}</button>
     <button>ボタン2</button>
     <!-- 他のナビゲーション要素 -->
   </nav>
