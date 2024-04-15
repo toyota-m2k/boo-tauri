@@ -1,0 +1,84 @@
+<script lang="ts">
+  import Viewbox from "./Viewbox.svelte";
+  import {createEventDispatcher} from 'svelte';
+
+  export let title: string;
+
+  const dispatch = createEventDispatcher();
+
+  function toggleSidePanel() {
+    dispatch('toggleSidePanel');
+  }
+
+  let headerElem: HTMLElement;
+</script>
+
+
+<header bind:this={headerElem} class="header">
+  <div class="left-header">
+    <button class="menu-button" on:click={toggleSidePanel}>☰</button>
+    <div class="appName">BooTauri</div>
+    <Viewbox text="{title}"/>
+  </div>
+  <nav>
+    <button>ボタン1</button>
+    <button>ボタン2</button>
+    <!-- 他のナビゲーション要素 -->
+  </nav>
+</header>
+
+<style lang="scss">
+  .header {
+    background-color: #333; /* ヘッダーの背景色 */
+    color: white; /* ヘッダー内のテキスト色 */
+    padding: 2px 10px; /* パディング */
+    box-sizing: border-box;
+    display: flex; /* フレックスボックスを使用 */
+    justify-content: space-between; /* タイトルとナビゲーションを両端に配置 */
+    align-items: center; /* アイテムを中央揃え */
+  }
+
+  .header h1 {
+    margin: 0; /* タイトルのマージンをリセット */
+  }
+
+  .left-header {
+    display: flex;
+    align-items: center;
+  }
+
+  /* サイドパネル開閉ボタンのスタイル */
+  .menu-button {
+    background: none;
+    border: none;
+    color: white;
+    font-size: 24px;
+    cursor: pointer;
+    padding: 10px;
+  }
+
+  .appName {
+    font-size: 1.5rem;
+    margin-right: 1rem;
+  }
+
+  nav {
+    display: flex;
+    gap: 1rem;
+    flex-direction: row; /* ナビゲーションを横並びに */
+  }
+
+  .header nav button {
+    background-color: #555; /* ボタンの背景色 */
+    color: white; /* ボタンのテキスト色 */
+    border: none; /* ボタンの境界線を削除 */
+    padding: 5px 10px; /* ボタンのパディング */
+    margin-left: 10px; /* ボタン間のマージン */
+    cursor: pointer; /* ホバー時のカーソルをポインターに */
+  }
+
+  .header nav button:hover {
+    background-color: #666; /* ホバー時のボタンの背景色 */
+  }
+
+</style>
