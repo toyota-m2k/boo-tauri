@@ -6,9 +6,9 @@ class BooProtocolImpl implements IBooProtocol {
   private capabilities: ICapabilities | undefined
   private authToken: IAuthToken | undefined
   private challenge: string | undefined
-  private requirePassword: (() => Promise<string>)
+  private requirePassword: (() => Promise<string|undefined>)
 
-  constructor(requirePassword: () => Promise<string>) {
+  constructor(requirePassword: () => Promise<string|undefined>) {
     this.requirePassword = requirePassword
   }
 
@@ -169,13 +169,17 @@ class BooProtocolImpl implements IBooProtocol {
   }
 
   getItemUrl(mediaItem: IMediaItem): string {
+    let auth = ``
+    if (this.needAuth && this.authToken) {
+      auth = `&auth=${this.authToken.token}`
+    }
     switch (mediaItem.type) {
       case 'jpg':
       case 'jpeg':
       case 'png':
-        return this.baseUri + `photo?id=${mediaItem.id}`
+        return this.baseUri + `photo?id=${mediaItem.id}`+auth
       default:
-        return this.baseUri + `video?id=${mediaItem.id}`
+        return this.baseUri + `video?id=${mediaItem.id}`+auth
     }
   }
 
@@ -248,6 +252,6 @@ class BooProtocolImpl implements IBooProtocol {
   }
 }
 
-export function createBooProtocol(requirePassword: () => Promise<string>): IBooProtocol {
+export function createBooProtocol(requirePassword: () => Promise<string|undefined>): IBooProtocol {
   return new BooProtocolImpl(requirePassword)
 }

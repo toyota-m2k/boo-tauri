@@ -8,5 +8,4 @@ export class HostInfo implements IHostInfo {
     this.host = host
     this.port = port
   }
-
 }

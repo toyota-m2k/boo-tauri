@@ -2,7 +2,8 @@
   import Viewbox from "./Viewbox.svelte";
   import {createEventDispatcher} from 'svelte';
   import {viewModel} from "./ViewModel";
-
+  import {Button, GradientButton} from "flowbite-svelte";
+  import {CogOutline} from "flowbite-svelte-icons";
   export let title: string;
 
   const dispatch = createEventDispatcher();
@@ -22,21 +23,39 @@
       viewModel.fitMode.set('fit');
     }
   }
+
+  function showSettingsDialog() {
+    // const p = viewModel.showPasswordDialog()
+    // p.then((pwd) => {
+    //     console.log("pwd=" + pwd)
+    //   })
+    //   .catch((e) => {
+    //     console.log("error=" + e)
+    //   })
+    //   .finally(() => {
+    //     console.log("finally")
+    //   })
+
+
+    viewModel.showSettingsDialog()
+  }
 </script>
 
 
-<header bind:this={headerElem} class="header">
+<div bind:this={headerElem} class="header">
   <div class="left-header">
     <button class="menu-button" on:click={toggleSidePanel}>☰</button>
     <div class="appName">BooTauri</div>
     <Viewbox text="{title}"/>
   </div>
   <nav>
-    <button on:click={nextFitMode}>{$fitMode}</button>
-    <button>ボタン2</button>
+    <GradientButton size="sm" class="h-7" on:click={nextFitMode}>{$fitMode}</GradientButton>
+    <GradientButton size="xs" class="h-7" on:click={showSettingsDialog}>
+      <CogOutline class="h-4 w-4"/>
+    </GradientButton>
     <!-- 他のナビゲーション要素 -->
   </nav>
-</header>
+</div>
 
 <style lang="scss">
   .header {
@@ -49,9 +68,9 @@
     align-items: center; /* アイテムを中央揃え */
   }
 
-  .header h1 {
-    margin: 0; /* タイトルのマージンをリセット */
-  }
+  //.header h1 {
+  //  margin: 0; /* タイトルのマージンをリセット */
+  //}
 
   .left-header {
     display: flex;

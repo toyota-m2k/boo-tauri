@@ -1,16 +1,19 @@
 import {createBooProtocol} from "./BooProtocol";
 import {
-  currentValueMap,
   type CurrentValueReadable,
   currentValueStore,
   type CurrentValueStore
 } from "./CurrentValueStore";
 import {HostInfo} from "./HostInfo";
 import {launch} from "./Utils";
+import PasswordDialog from "./dialog/PasswordDialog.svelte";
+import {showDialog} from "./dialog/Dialog";
+import SettingsDialog from "./dialog/SettingsDialog.svelte";
+import {settings} from "./Settings";
 
 export interface IViewModel {
   // Observable Properties
-  requirePassword: () => Promise<string>
+  // requirePassword: () => Promise<string|undefined>
   mediaList: CurrentValueReadable<IMediaList>
   listRequest: IListRequest
   hostInfo: CurrentValueReadable<HostInfo | undefined>
@@ -21,7 +24,13 @@ export interface IViewModel {
   currentPosition: CurrentValueStore<number>
   fitMode: CurrentValueStore<FitMode>
 
+  // dialogs
+  // settingsDialog: CurrentValueReadable<boolean>
+  // passwordDialog: CurrentValueReadable<boolean>
+
+
   // Methods
+  initialize(): Promise<void>
   setHost: (hostInfo: HostInfo) => Promise<boolean>
   setCurrentIndex: (index: number) => boolean
   mediaUrl: (mediaItem: IMediaItem) => string
@@ -33,14 +42,18 @@ export interface IViewModel {
   nextChapter: () => void
   prevChapter: (isPlaying: boolean) => void
 
+  showSettingsDialog: () => void
+
+  showPasswordDialog: () => Promise<string|undefined>
+  // closePasswordDialog: (password:string | undefined) => void
+
 }
 
 export type FitMode = "fit" | "fill" | "original"
 
 class ViewModel implements IViewModel {
-  requirePassword: () => Promise<string> = async () => {
-    return "a"
-  }
+  requirePassword: () => Promise<string|undefined> = this.showPasswordDialog
+
   boo = createBooProtocol(() => {
     return this.requirePassword()
   })
@@ -55,6 +68,17 @@ class ViewModel implements IViewModel {
   mediaList = currentValueStore<IMediaList>({list: [], date: 0})
 
   listRequest: IListRequest = {type: "all", sourceType: 1}
+
+
+  async initialize() {
+    await settings.load()
+    const hostInfo = settings.currentHost
+    if (hostInfo) {
+      await this.setHost(hostInfo)
+    } else {
+      await this.showSettingsDialog()
+    }
+  }
 
 
   // プレーヤー関連
@@ -86,6 +110,10 @@ class ViewModel implements IViewModel {
   currentPosition = currentValueStore<number>(0)
 
   fitMode: CurrentValueStore<FitMode> = currentValueStore<FitMode>("fit")
+
+  // Dialogs
+  // settingsDialog = currentValueStore<boolean>(false)
+  // passwordDialog = currentValueStore<boolean>(false)
 
   async setHost(hostInfo: HostInfo): Promise<boolean> {
     if (this.isBusy.currentValue) {
@@ -172,6 +200,58 @@ class ViewModel implements IViewModel {
       return pos > c.position
     }))
   }
+
+  async showSettingsDialog() {
+    if(await showDialog<boolean>((params) => {
+      return new SettingsDialog(params)
+    })) {
+      const hostInfo = settings.currentHost
+      if(hostInfo) {
+        await this.setHost(hostInfo)
+      }
+    }
+  }
+
+  private passwordPromise: Promise<string|undefined> | undefined
+  private passwordResolver: ((value: string|undefined) => void) | undefined
+
+  async showPasswordDialog(): Promise<string|undefined>{
+    return showDialog<string|undefined>((params)=>{ return new PasswordDialog(params) })
+
+
+    // let complettionProc: CompletionProc<string|undefined>|undefined = undefined
+    // function complete(value: string|undefined) {
+    //   if(complettionProc) {
+    //     complettionProc(value)
+    //   }
+    // }
+    //
+    // const elem = document.getElementById("dialogContainer") as HTMLElement
+    // let dlg: PasswordDialog|undefined
+    // const password = await new Promise<string|undefined>((resolve, reject) => {
+    //   dlg = new PasswordDialog({
+    //     target: elem,
+    //     props: {
+    //       title: "Password",
+    //       completion: (value:string|undefined)=> {
+    //         resolve(value)
+    //       }
+    //     }
+    //   })
+    // })
+    // if(dlg!==undefined) {
+    //   dlg.$destroy()
+    // }
+    // return password
+  }
+
+  // closePasswordDialog(password:string | undefined) {
+  //   this.passwordDialog.set(false)
+  //   if(this.passwordResolver) {
+  //     this.passwordResolver(password)
+  //   }
+  // }
 }
 
+export type CompletionProc<T> = (value: T) => void
 export const viewModel: IViewModel = new ViewModel()

@@ -1,31 +1,38 @@
-import { readTextFile, writeTextFile } from '@tauri-apps/api/fs';
+import { HostInfo } from "./HostInfo";
+import {Preferences} from "./Preferences";
+import {launch} from "./Utils";
 
-export class Settings {
-  private static readonly SETTINGS_FILE = 'settings.json';
-  private static settings: Record<string, unknown> = {};
+export interface ISettings {
+  currentHost: HostInfo | undefined
+  hostInfoList: HostInfo[]
+  load(): Promise<void>
+  save(): Promise<void>
+}
 
-  public static async load(): Promise<void> {
-    try {
-      const settings = await readTextFile(Settings.SETTINGS_FILE);
-      Settings.settings = JSON.parse(settings);
-    } catch (error) {
-      console.error('Failed to load settings', error);
-    }
+class Settings implements ISettings {
+  private preferences = new Preferences()
+  async load(): Promise<void> {
+    await this.preferences.load()
+  }
+  get currentHost(): HostInfo|undefined {
+    return this.preferences.get('currentHost', undefined)
+  }
+  set currentHost(hostInfo: HostInfo|undefined) {
+    this.preferences.set('currentHost', hostInfo)
   }
 
-  public static async save(): Promise<void> {
-    try {
-      await writeTextFile(Settings.SETTINGS_FILE, JSON.stringify(Settings.settings));
-    } catch (error) {
-      console.error('Failed to save settings', error);
-    }
+  get hostInfoList(): HostInfo[] {
+    return this.preferences.get('hostInfoList', [])
   }
 
-  public static get<T>(key: string, defaultValue: T): T {
-    return Settings.settings[key] as T ?? defaultValue;
+  set hostInfoList(hostInfoList: HostInfo[]) {
+    this.preferences.set('hostInfoList', hostInfoList)
   }
 
-  public static set<T>(key: string, value: T): void {
-    Settings.settings[key] = value;
+  async save() {
+    await this.preferences.save()
   }
 }
+
+export const settings = new Settings()
+

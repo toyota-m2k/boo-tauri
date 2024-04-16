@@ -14,7 +14,7 @@
     })
 
     await bp.setup({host: "localhost", port: 6001})
-    const list = await bp.list({})
+    const list = await bp.list({type: "mp4"})
 
     // let body = await response.body?.getReader().read()
     if(list!=null) {
