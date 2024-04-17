@@ -72,9 +72,13 @@
   }
 
   async function complete(ok:boolean) {
-    if(ok && (modified || !isSameHost(currentHost,settings.currentHost))) {
-      settings.hostInfoList = hostList
-      settings.currentHost = currentHost
+    if(ok) {
+      if(modified) {
+          settings.hostInfoList = hostList
+      }
+      if(!isSameHost(currentHost,settings.currentHost)) {
+          settings.currentHost = currentHost
+      }
       await settings.save()
       completion?.(true)
     } else {
