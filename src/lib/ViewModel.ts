@@ -28,6 +28,14 @@ export interface IViewModel {
   // settingsDialog: CurrentValueReadable<boolean>
   // passwordDialog: CurrentValueReadable<boolean>
 
+  videoSupported: CurrentValueReadable<boolean>
+  audioSupported: CurrentValueReadable<boolean>
+  photoSupported: CurrentValueReadable<boolean>
+  typeSelectable: CurrentValueReadable<boolean>
+
+  videoSelected: CurrentValueStore<boolean>
+  audioSelected: CurrentValueStore<boolean>
+  photoSelected: CurrentValueStore<boolean>
 
   // Methods
   initialize(): Promise<void>
@@ -46,7 +54,6 @@ export interface IViewModel {
 
   showPasswordDialog: () => Promise<string|undefined>
   // closePasswordDialog: (password:string | undefined) => void
-
 }
 
 export type FitMode = "fit" | "fill" | "original"
@@ -111,6 +118,16 @@ class ViewModel implements IViewModel {
 
   fitMode: CurrentValueStore<FitMode> = currentValueStore<FitMode>("fit")
 
+  typeSelectable = currentValueStore<boolean>(false)
+
+  videoSupported = currentValueStore<boolean>(false)
+  audioSupported = currentValueStore<boolean>(false)
+  photoSupported = currentValueStore<boolean>(false)
+
+  videoSelected = currentValueStore<boolean>(true)
+  audioSelected = currentValueStore<boolean>(true)
+  photoSelected = currentValueStore<boolean>(true)
+
   // Dialogs
   // settingsDialog = currentValueStore<boolean>(false)
   // passwordDialog = currentValueStore<boolean>(false)
@@ -126,6 +143,15 @@ class ViewModel implements IViewModel {
     this.hostInfo.set(undefined)
     this.isBusy.set(true)
 
+    this.typeSelectable.set(false)
+    this.videoSupported.set(false)
+    this.audioSupported.set(false)
+    this.photoSupported.set(false)
+
+    this.videoSelected.set(true)
+    this.audioSelected.set(true)
+    this.photoSelected.set(true)
+
     try {
       if (await this.boo.setup(hostInfo)) {
         const list = await this.boo.list(this.listRequest)
@@ -133,6 +159,15 @@ class ViewModel implements IViewModel {
         this.hostInfo.set(hostInfo)
         if (list.list.length > 0) {
           this.setCurrentIndex(0)
+        }
+        if(this.boo.isSupported("v")) {
+          this.videoSupported.set(true)
+        }
+        if(this.boo.isSupported("a")) {
+          this.audioSupported.set(true)
+        }
+        if(this.boo.isSupported("p")) {
+          this.photoSupported.set(true)
         }
         return true
       } else {

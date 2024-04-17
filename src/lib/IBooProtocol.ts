@@ -7,6 +7,8 @@ interface IDResponse {
   id: string
 }
 
+type MediaType = "v" | "a" | "p"
+
 interface ICapabilities {
   cmd: string
   serverName: string
@@ -23,6 +25,7 @@ interface ICapabilities {
   hasView: boolean
   authentication: boolean
   challenge: string | undefined
+  supportedTypes: string | undefined
 }
 
 interface IAuthToken {
@@ -119,5 +122,7 @@ interface IBooProtocol {
   marks(): Promise<IMark[]>
 
   ratings(): Promise<IRatingList>
+
+  isSupported(type: MediaType): boolean
 }
 

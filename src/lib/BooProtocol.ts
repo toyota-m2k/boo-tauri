@@ -250,6 +250,10 @@ class BooProtocolImpl implements IBooProtocol {
     const url = this.baseUri + 'ratings'
     return await this.handleResponse<IRatingList>(await fetch(url))
   }
+
+  isSupported(type: MediaType): boolean {
+    return this.capabilities?.supportedTypes?.includes(type) ?? false
+  }
 }
 
 export function createBooProtocol(requirePassword: () => Promise<string|undefined>): IBooProtocol {
