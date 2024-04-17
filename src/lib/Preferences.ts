@@ -21,31 +21,32 @@ export class Preferences {
       this.settings = {
         hostInfoList: [
           {
-            displayName: "Boo-MakibaO",
+            displayName: "2F-MakibaO-Boo",
             host: "192.168.0.151",
             port: 3500
           },
           {
-            displayName: "Boo-TamayoPtx",
-            host: "192.168.0.152",
-            port: 3500
-          },
-          {
-            displayName: "SA-MakibaO",
+            displayName: "2F-MakibaO-SA",
             host: "192.168.0.151",
             port: 6001
           },
           {
-            displayName: "Boo-TamayoPtx",
+            displayName: "1F-TamayoPtx-Boo",
+            host: "192.168.0.152",
+            port: 3500
+          },
+          {
+            displayName: "1F-TamayoPtx-SA",
             host: "192.168.0.152",
             port: 6001
           },
         ],
         currentHost: {
-          displayName: "SA-MakibaO",
+          displayName: "2F-MakibaO-Boo",
           host: "192.168.0.151",
-          port: 6001
+          port: 3500
         },
+
       }
     }
   }
