@@ -1,10 +1,12 @@
 import { HostInfo } from "./HostInfo";
 import {Preferences} from "./Preferences";
 import {launch} from "./Utils";
+import type {PlayMode} from './IBooProtocol'
 
 export interface ISettings {
   currentHost: HostInfo | undefined
   hostInfoList: HostInfo[]
+  playMode: PlayMode
   load(): Promise<void>
   save(): Promise<void>
 }
@@ -27,6 +29,14 @@ class Settings implements ISettings {
 
   set hostInfoList(hostInfoList: HostInfo[]) {
     this.preferences.set('hostInfoList', hostInfoList)
+  }
+
+  get playMode(): PlayMode {
+    return this.preferences.get('playMode', 'sequential')
+  }
+  set playMode(playMode: PlayMode) {
+    this.preferences.set('playMode', playMode)
+    launch(()=> { return this.save() })
   }
 
   async save() {

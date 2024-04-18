@@ -4,48 +4,67 @@
   import List from "./lib/List.svelte";
   import Player from "./lib/Player.svelte";
   import TitleBar from "./lib/TitleBar.svelte";
-  import {onMount} from "svelte";
+  import {onMount, tick} from "svelte";
+  import {launch} from "./lib/Utils";
 
+  const SidePanelThreshold = 1024
   const currentIndex$ = viewModel.currentIndex;
   $: title = viewModel.mediaItemAt($currentIndex$)?.name ?? "No Media"
+  const loading$ = viewModel.isBusy;
+  $: if(!$loading$) {
+    launch(async () => {
+      await tick()
+      onWindowSizeChanged()
+    })
+  }
 
   let container: HTMLElement
   let headerElem: HTMLElement
   let mainContent: HTMLElement
   let sidePanel: HTMLElement
   const sidePanelWidth = getComputedStyle(document.documentElement).getPropertyValue('--side-panel-width')
-  function toggleSidePanel() {
-    // 画面幅が600px以上の場合のみ実行
-    if (window.innerWidth >= 600) {
-      if (sidePanel.style.left === '0px') {
-        mainContent.style.marginLeft = '0'; // main-contentの余白をなくす
-      } else {
-        mainContent.style.marginLeft = sidePanelWidth // main-contentの余白を設定する
-      }
+
+  function showSidePanel(overwrap:boolean) {
+    sidePanel.style.left = '0'
+    if (overwrap) {
+      mainContent.style.left = '0'
     } else {
-      mainContent.style.marginLeft = '0'; // main-contentの余白をなくす
+      mainContent.style.left = `${sidePanelWidth}`
     }
-    sidePanel.style.left = sidePanel.style.left === '0px' ? `-${sidePanelWidth}` : '0px';
+  }
+  function hideSidePanel() {
+    sidePanel.style.left = `-${sidePanelWidth}`
+    mainContent.style.left = '0'
+  }
+
+  function isSidePanelShown() {
+    const org = sidePanel.style.left
+    return !org || org === '0px' || org === '0'|| org === ''
+  }
+
+  function toggleSidePanel() {
+    if(isSidePanelShown()) {
+      hideSidePanel()
+    } else {
+      showSidePanel(window.innerWidth<SidePanelThreshold)
+    }
     updateBodyPadding() // 初めてサイドパネルを表示するとき用
   }
 
   // ヘッダーの高さを取得してbodyのpadding-topに設定する関数
   function updateBodyPadding() {
     const headerHeight = headerElem.offsetHeight // ヘッダーの高さを取得
-    container.style.paddingTop = `${headerHeight}px` // 取得した高さをbodyのpadding-topに設定
+    container.style.top  = `${headerHeight}px` // 取得した高さをbodyのpadding-topに設定
+    container.style.height = `calc(100vh - ${headerHeight}px)` // ヘッダーの高さを引いた高さを設定
   }
   function onWindowSizeChanged() {
-    // 画面幅が600px以上になったらサイドパネルを表示する
-    if (window.innerWidth >= 600) {
-      sidePanel.style.left = '0';
-      mainContent.style.marginLeft = sidePanelWidth
+    // 画面幅が  px以上になったらサイドパネルを表示する
+    if (window.innerWidth >= SidePanelThreshold) {
+      showSidePanel(false)
     }
-    // 画面幅が600px未満になったらサイドパネルを非表示にする
+    // 画面幅が SidePanelThreshold px未満になったらサイドパネルを非表示にする
     else {
-      if (sidePanel.style.left === '0px') {
-        sidePanel.style.left = `-${sidePanelWidth}`;
-        mainContent.style.marginLeft = '0'
-      }
+      hideSidePanel()
     }
     updateBodyPadding()
   }
@@ -58,9 +77,9 @@
 </script>
 
 <svelte:window on:resize={onWindowSizeChanged} />
-<header bind:this={headerElem} class="header">
+<div bind:this={headerElem} class="header">
   <TitleBar title={title} on:toggleSidePanel={toggleSidePanel}/>
-</header>
+</div>
 
 <main bind:this={container} class="my-container">
   <div bind:this={sidePanel} class="side-panel">
@@ -81,16 +100,6 @@
 <!--<SettingsDialog/>-->
 
 <style lang="scss">
-  .my-container {
-    margin: 0;
-    width: 100%;
-    height: 100vh;
-    //display: flex;
-    //flex-direction: column;
-    //justify-content: center;
-    //text-align: center;
-  }
-
   .header {
     position: fixed; /* ヘッダーを固定 */
     top: 0; /* 上部から0pxの位置に */
@@ -99,32 +108,49 @@
     z-index: 10; /* 他の要素より前面に表示 */
   }
 
+  .my-container {
+    position: relative;
+    margin: 0;
+    width: 100%;
+    //height: 100%;
+    display: flex;
+    //flex-direction: column;
+    //justify-content: center;
+    //text-align: center;
+  }
+
+
 
   /* サイドパネルの基本スタイル */
   .side-panel {
+    position: absolute;
     width: var(--side-panel-width);
-    height: 100vh;
-    position: fixed;
+    top: 0;
+    bottom: 0;
     left: calc(-1 * var(--side-panel-width));
     transition: left 0.3s;
     background-color: #f0f0f0;
     overflow-y: auto; /* 縦方向のスクロールバーを有効にする */
     z-index: 10; /* Playerより上に表示：これを入れておかないと、on:click を Playerが先にハンドルしてしまう */
   }
+
   .main-content {
+    position: absolute;
+    top: 0;
+    bottom: 0;
     background-color: #f8f8f8;
-    height: 100%;
-    margin-left: 0;
+    left: 0;
+    right: 0;
   }
 
   /* 画面幅が600px以上の場合、サイドパネルを表示 */
   //@media (min-width: 600px) {
-    //.side-panel {
-    //  //position: static; /* 固定位置を解除 */
-    //}
-    //.main-content {
-    //  margin-left: var(--side-panel-width); /* side-panelの幅だけ左に余白を設定 */
-    //}
+  //  .side-panel {
+  //    left: 0;
+  //  }
+  //  .main-content {
+  //    left: var(--side-panel-width); /* side-panelの幅だけ左に余白を設定 */
+  //  }
   //}
 
   //@media (max-width: 599px) {

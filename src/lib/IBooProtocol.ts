@@ -1,15 +1,17 @@
-interface IHostInfo {
+export interface IHostInfo {
   host: string
   port: number
 }
 
-interface IDResponse {
+export interface IDResponse {
   id: string
 }
 
-type MediaType = "v" | "a" | "p"
+export type MediaType = "v" | "a" | "p"
 
-interface ICapabilities {
+export type PlayMode = "single"|"repeat"|"sequential"
+
+export interface ICapabilities {
   cmd: string
   serverName: string
   version: number
@@ -28,12 +30,12 @@ interface ICapabilities {
   supportedTypes: string | undefined
 }
 
-interface IAuthToken {
+export interface IAuthToken {
   token: string
   term: number
 }
 
-interface IListRequest {
+export interface IListRequest {
   type?: string,       // all | photo | video | audio
   category?: string | undefined,
   mark?: number | undefined,
@@ -42,7 +44,7 @@ interface IListRequest {
   search?: string | undefined,
 }
 
-interface IMediaItem {
+export interface IMediaItem {
   id: string,         // media id
   name: string,
   type: string,       // mp4 | jpg | mp3
@@ -51,30 +53,30 @@ interface IMediaItem {
   duration: number | undefined,
 }
 
-interface IMediaList {
+export interface IMediaList {
   list: IMediaItem[],
   date: number,    // last modified
 }
 
-interface IChapter {
+export interface IChapter {
   position: number,
   label: string,
   skip: boolean,
 }
 
-interface IChapterList {
+export interface IChapterList {
   items: IChapter[],
   id: string,                 // media id
 }
 
-interface IRequtation {
+export interface IRequtation {
   id: string,
   rating?: number | undefined,
   mark?: number | undefined,
   category?: string | undefined,
 }
 
-interface ICategory {
+export interface ICategory {
   label: string,
   sort: number,
   color: number,
@@ -82,24 +84,24 @@ interface ICategory {
 }
 
 
-interface IMark {
+export interface IMark {
   mark: number,
   label: string,
   svg: string,
 }
 
-interface IRating {
+export interface IRating {
   rating: number,
   label: string,
   svg: string,
 }
 
-interface IRatingList {
+export interface IRatingList {
   default: number,
   items: IRating[],
 }
 
-interface IBooProtocol {
+export interface IBooProtocol {
   setup(hostInfo: IHostInfo): Promise<boolean>
 
   list(req: IListRequest): Promise<IMediaList>

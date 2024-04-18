@@ -7,12 +7,21 @@
   const mediaList = viewModel.mediaList;
   const currentIndex = viewModel.currentIndex;
   let currentId:string|undefined
+  let tableBody:TableBody;
   $: currentId = viewModel.mediaItemAt($currentIndex)?.id
+  $: if(currentId) {
+    try {
+      // tableBody.scrollToRow(currentId)
+      document.getElementById(currentId)?.scrollIntoView({behavior: "smooth", block: "nearest"})
+    } catch (e) {
+      console.error(e)
+    }
+  }
 
   function onSelect(e:MouseEvent, index:number) {
-    e.preventDefault();
-    e.stopPropagation();
-    viewModel.setCurrentIndex(index);
+    e.preventDefault()
+    e.stopPropagation()
+    viewModel.setCurrentIndex(index)
   }
 
   onMount(() => {
@@ -25,9 +34,9 @@
 <div>
   {#if $mediaList.list.length !== 0}
     <Table hoverable={true}>
-      <TableBody>
+      <TableBody bind:this={tableBody}>
       {#each $mediaList.list as item, i (item.id)}
-        <TableBodyRow>
+        <TableBodyRow id={item.id}>
           <TableBodyCell on:click={ (e)=>onSelect(e,i) } tdClass="cursor-pointer whitespace-nowrap font-medium text-xs">
             <div class:bg-indigo-500={currentId===item.id} class="px-1 py-0.5">
               <div class:text-white={currentId===item.id}>{item.name}</div>

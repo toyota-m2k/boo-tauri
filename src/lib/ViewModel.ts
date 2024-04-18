@@ -10,6 +10,7 @@ import PasswordDialog from "./dialog/PasswordDialog.svelte";
 import {showDialog} from "./dialog/Dialog";
 import SettingsDialog from "./dialog/SettingsDialog.svelte";
 import {settings} from "./Settings";
+import type {IChapter, IChapterList, IListRequest, IMediaItem, IMediaList, PlayMode} from './IBooProtocol'
 
 export interface IViewModel {
   // Observable Properties
@@ -23,6 +24,7 @@ export interface IViewModel {
   chapterList: CurrentValueReadable<IChapterList | undefined>
   currentPosition: CurrentValueStore<number>
   fitMode: CurrentValueStore<FitMode>
+  playMode: CurrentValueReadable<PlayMode>
 
   // dialogs
   // settingsDialog: CurrentValueReadable<boolean>
@@ -49,6 +51,8 @@ export interface IViewModel {
   hasPrev: () => boolean
   nextChapter: () => void
   prevChapter: (isPlaying: boolean) => void
+
+  nextPlayMode(): void
 
   showSettingsDialog: () => void
 
@@ -79,6 +83,7 @@ class ViewModel implements IViewModel {
 
   async initialize() {
     await settings.load()
+    this.playMode.set(settings.playMode)
     const hostInfo = settings.currentHost
     if (hostInfo) {
       await this.setHost(hostInfo)
@@ -117,6 +122,10 @@ class ViewModel implements IViewModel {
   currentPosition = currentValueStore<number>(0)
 
   fitMode: CurrentValueStore<FitMode> = currentValueStore<FitMode>("fit")
+
+  // 再生方法
+  playMode: CurrentValueStore<PlayMode> = currentValueStore<PlayMode>("sequential")
+
 
   typeSelectable = currentValueStore<boolean>(false)
 
@@ -234,6 +243,13 @@ class ViewModel implements IViewModel {
     this.goChapter(cl?.findLast((c, i) => {
       return pos > c.position
     }))
+  }
+
+  nextPlayMode() {
+    const current = this.playMode.currentValue
+    const next = current === "sequential" ? "repeat" : current === "repeat" ? "single" : "sequential"
+    this.playMode.set(next)
+    settings.playMode = next
   }
 
   async showSettingsDialog() {

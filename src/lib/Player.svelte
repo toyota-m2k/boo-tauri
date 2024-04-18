@@ -1,6 +1,9 @@
 <script lang="ts">
   import {viewModel} from "./ViewModel";
   import type {Readable} from "svelte/store";
+  import type {IMediaItem} from './IBooProtocol'
+  import {launch} from './Utils'
+  import {tick} from 'svelte'
 
   let player: HTMLVideoElement
   let currentIndex$: Readable<number> = viewModel.currentIndex
@@ -18,7 +21,22 @@
 
   let fitMode = viewModel.fitMode //: "fit"|"fill"|"original" = "fit"
 
-
+  function onEnded() {
+    launch(async () => {
+      await tick()
+      switch (viewModel.playMode.currentValue) {
+        case "sequential":
+          viewModel.next()
+          break
+        case "repeat":
+          viewModel.currentPosition.set(0)
+          await player.play()
+          break
+        default:
+          break
+      }
+    })
+  }
   function togglePlay() {
     if (!player) {
       return;
@@ -41,12 +59,14 @@
       class:original={$fitMode==="original"}
       bind:this={player}
       src={currentMediaUrl}
-      on:click={togglePlay}
+      on:click|preventDefault={togglePlay}
       bind:duration
       bind:currentTime={$currentPosition$}
       bind:paused
       bind:ended
+      on:ended={onEnded}
       autoplay
+      controls
     >
       <track kind="captions" src="">
     </video>
@@ -67,25 +87,25 @@
     display: flex;
     justify-content: center;
     align-items: center;
-    height: 100vh;
+    height: 100%;
     overflow: hidden; /* コンテナからはみ出たビデオの部分を隠します */
   }
 
   .media-view {
-    max-width: 100vw;
-    max-height: 100vh;
+    max-width: 100%;
+    max-height: 100%;
   }
 
   .media-view.fit {
-    width: 100vw;
-    height: 100vh;
+    width: 100%;
+    height: 100%;
     margin: auto; /* これによりビデオがコンテナの中央に配置されます */
     object-fit: contain; /* ビデオがコンテナの幅または高さに合わせて調整されます */
   }
 
   .media-view.fill {
-    width: 100vw;
-    height: 100vh;
+    width: 100%;
+    height: 100%;
     margin: auto; /* これによりビデオがコンテナの中央に配置されます */
     object-fit: cover; /* ビデオがコンテナの幅または高さに合わせて調整されます */
   }

@@ -3,8 +3,13 @@
   import {createEventDispatcher} from 'svelte';
   import {viewModel} from "./ViewModel";
   import {Button, GradientButton} from "flowbite-svelte";
-  import {CogOutline} from "flowbite-svelte-icons";
+  // import {CogOutline} from "flowbite-svelte-icons";
+  import {ICON_COG,ICON_REPEAT,ICON_SINGLE,ICON_SEQUENTIAL} from './Icons.js'
+  import SvgIcon from './SvgIcon.svelte'
+
   export let title: string;
+  const playMode = viewModel.playMode;
+
 
   const dispatch = createEventDispatcher();
 
@@ -50,8 +55,17 @@
   </div>
   <nav>
     <GradientButton size="sm" class="h-7" on:click={nextFitMode}>{$fitMode}</GradientButton>
+    <GradientButton size="xs" class="h-7" on:click={()=>viewModel.nextPlayMode()}>
+      {#if $playMode === 'single'}
+        <SvgIcon class="h-4 w-4" path={ICON_SINGLE}/>
+      {:else if $playMode === 'sequential'}
+        <SvgIcon class="h-4 w-4" path={ICON_SEQUENTIAL}/>
+      {:else}
+        <SvgIcon class="h-4 w-4" path={ICON_REPEAT}/>
+      {/if}
+    </GradientButton>
     <GradientButton size="xs" class="h-7" on:click={showSettingsDialog}>
-      <CogOutline class="h-4 w-4"/>
+      <SvgIcon class="h-4 w-4" path={ICON_COG}/>
     </GradientButton>
     <!-- 他のナビゲーション要素 -->
   </nav>

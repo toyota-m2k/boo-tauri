@@ -1,5 +1,14 @@
 import {authentication} from "./Authentication"
 import {BooError} from "./BooError";
+import type {
+  IAuthToken,
+  IBooProtocol,
+  ICapabilities, ICategory,
+  IChapterList, IDResponse,
+  IHostInfo,
+  IListRequest, IMark, IMediaItem,
+  IMediaList, IRatingList, IRequtation, MediaType
+} from './IBooProtocol'
 
 class BooProtocolImpl implements IBooProtocol {
   private hostInfo: IHostInfo | undefined
