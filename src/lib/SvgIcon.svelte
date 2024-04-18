@@ -1,4 +1,7 @@
 <script lang="ts">
+  import { getContext } from "svelte"
+  import { twMerge } from "tailwind-merge"
+
   type Context = {
     size?: string
     role?: string
@@ -7,8 +10,7 @@
     path?: string
   }
   type Size = "xs" | "sm" | "md" | "lg" | "xl"
-  import { getContext } from "svelte"
-  import { twMerge } from "tailwind-merge"
+
   const ctx:Context = getContext("iconCtx") ?? {}
   const sizes = {
     xs: "w-3 h-3",

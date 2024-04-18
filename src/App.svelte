@@ -24,6 +24,7 @@
   let sidePanel: HTMLElement
   const sidePanelWidth = getComputedStyle(document.documentElement).getPropertyValue('--side-panel-width')
 
+  // region Side Panel
   function showSidePanel(overwrap:boolean) {
     sidePanel.style.left = '0'
     if (overwrap) {
@@ -36,12 +37,10 @@
     sidePanel.style.left = `-${sidePanelWidth}`
     mainContent.style.left = '0'
   }
-
   function isSidePanelShown() {
     const org = sidePanel.style.left
     return !org || org === '0px' || org === '0'|| org === ''
   }
-
   function toggleSidePanel() {
     if(isSidePanelShown()) {
       hideSidePanel()
@@ -50,6 +49,8 @@
     }
     updateBodyPadding() // 初めてサイドパネルを表示するとき用
   }
+  // endregion
+
 
   // ヘッダーの高さを取得してbodyのpadding-topに設定する関数
   function updateBodyPadding() {
@@ -57,6 +58,7 @@
     container.style.top  = `${headerHeight}px` // 取得した高さをbodyのpadding-topに設定
     container.style.height = `calc(100vh - ${headerHeight}px)` // ヘッダーの高さを引いた高さを設定
   }
+
   function onWindowSizeChanged() {
     // 画面幅が  px以上になったらサイドパネルを表示する
     if (window.innerWidth >= SidePanelThreshold) {

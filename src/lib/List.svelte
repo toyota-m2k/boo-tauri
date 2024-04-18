@@ -4,6 +4,9 @@
   import {onMount} from "svelte";
   import {keyEvents} from "./KeyEvents";
 
+  let className = '';
+  export { className as class }
+
   const mediaList = viewModel.mediaList;
   const currentIndex = viewModel.currentIndex;
   let currentId:string|undefined

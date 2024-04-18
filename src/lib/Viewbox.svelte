@@ -1,12 +1,28 @@
 <script lang="ts">
-  import {onDestroy, onMount} from 'svelte'
+  import {onDestroy, onMount, tick} from 'svelte'
+  import {twMerge} from 'tailwind-merge'
+  import {launch} from './Utils'
 
-  export let text = ''
-  let fontSize = 20; // 初期フォントサイズ
+  let className = '';
+  export let text = '';
+  export { className as class }
+
+  export const maxFontSize = 20 // 最大フォントサイズ
+  export const minFontSize = 10 // 最小フォントサイズ
+
+  // let fontSize = initialFontSize;
   let container: HTMLDivElement
 
-  onMount(() => {
-    adjustFontSize()
+  let prevText = ''
+  $: if (prevText !== text) {
+    prevText = text
+    launch(async ()=>{
+      await tick()
+      adjustFontSize()
+    })
+  }
+
+  onMount(async () => {
     window.addEventListener('resize', adjustFontSize)
   });
   onDestroy(() => {
@@ -14,13 +30,15 @@
   });
 
   function adjustFontSize() {
-    let containerWidth = container.offsetWidth;
-    let currentWidth = container.scrollWidth;
+    let containerWidth = container.clientWidth
 
-    // コンテナに収まるまでフォントサイズを小さくする
-    while (currentWidth > containerWidth && fontSize > 10) {
-      fontSize -= 1;
-      currentWidth = container.scrollWidth;
+    container.style.fontSize = `${maxFontSize}px`
+    let maxWidth = container.scrollWidth
+    if(maxWidth <= containerWidth) return
+
+    for(let fontSize = maxFontSize-1 ; fontSize>=minFontSize ; fontSize--) {
+      container.style.fontSize = `${fontSize}px`
+      if(container.scrollWidth <= containerWidth) return
     }
   }
 </script>
@@ -33,6 +51,6 @@
   }
 </style>
 
-<div bind:this={container} class="text-container" style="font-size: {fontSize}px;">
+<div bind:this={container} class={twMerge("text-container", className)}>
   {text}
 </div>

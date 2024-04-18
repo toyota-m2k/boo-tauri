@@ -47,12 +47,12 @@
 </script>
 
 
-<div bind:this={headerElem} class="header">
+<div bind:this={headerElem} class="header bg-teal-800 text-gray-50">
   <div class="left-header">
     <button class="menu-button" on:click={toggleSidePanel}>☰</button>
     <div class="appName">BooTauri</div>
-    <Viewbox text="{title}"/>
   </div>
+  <Viewbox text="{title}" class="flex-grow"/>
   <nav>
     <GradientButton size="sm" class="h-7" on:click={nextFitMode}>{$fitMode}</GradientButton>
     <GradientButton size="xs" class="h-7" on:click={()=>viewModel.nextPlayMode()}>
@@ -73,8 +73,6 @@
 
 <style lang="scss">
   .header {
-    background-color: #333; /* ヘッダーの背景色 */
-    color: white; /* ヘッダー内のテキスト色 */
     padding: 2px 10px; /* パディング */
     box-sizing: border-box;
     display: flex; /* フレックスボックスを使用 */
@@ -108,7 +106,7 @@
 
   nav {
     display: flex;
-    gap: 1rem;
+    gap: 4px;
     flex-direction: row; /* ナビゲーションを横並びに */
   }
 
