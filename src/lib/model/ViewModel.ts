@@ -11,6 +11,9 @@ import {showDialog} from "../dialog/Dialog";
 import SettingsDialog from "../dialog/SettingsDialog.svelte";
 import {settings} from "./Settings";
 import type {IChapter, IChapterList, IListRequest, IMediaItem, IMediaList, PlayMode} from '../protocol/IBooProtocol'
+import type {IDisposable} from '../utils/IDisposable'
+import {Disposer} from '../utils/Disposer'
+import {disposableSubscribe} from '../utils/DisposableSubscribe'
 
 export interface IViewModel {
   // Observable Properties
@@ -126,7 +129,6 @@ class ViewModel implements IViewModel {
   // 再生方法
   playMode: CurrentValueStore<PlayMode> = currentValueStore<PlayMode>("sequential")
 
-
   typeSelectable = currentValueStore<boolean>(false)
 
   videoSupported = currentValueStore<boolean>(false)
@@ -141,6 +143,26 @@ class ViewModel implements IViewModel {
   // settingsDialog = currentValueStore<boolean>(false)
   // passwordDialog = currentValueStore<boolean>(false)
 
+  private filterObserver: IDisposable | undefined
+  private rawMediaList: IMediaList | undefined
+
+  private onFilterChanged() {
+      if(!this.rawMediaList) return
+    const current = this.mediaItemAt(this.currentIndex.currentValue)
+      const filteredList = this.rawMediaList?.list.filter(item => {
+      return (this.videoSelected.currentValue && item.media === "v") ||
+        (this.audioSelected.currentValue && item.media === "a") ||
+        (this.photoSelected.currentValue && item.media === "p")
+    })
+    const index = filteredList.findIndex(item => item.id === current?.id)
+    if(index<0) {
+      this._currentIndex.set(-1)
+      this.currentPosition.set(0)
+    }
+    this.mediaList.set({list: filteredList, date: this.rawMediaList.date})
+    this.setCurrentIndex(index)
+  }
+
   async setHost(hostInfo: HostInfo): Promise<boolean> {
     if (this.isBusy.currentValue) {
       return false
@@ -151,6 +173,9 @@ class ViewModel implements IViewModel {
     this.mediaList.set({list: [], date: 0})
     this.hostInfo.set(undefined)
     this.isBusy.set(true)
+
+    this.filterObserver?.dispose()
+    this.filterObserver = undefined
 
     this.typeSelectable.set(false)
     this.videoSupported.set(false)
@@ -164,25 +189,26 @@ class ViewModel implements IViewModel {
     try {
       if (await this.boo.setup(hostInfo)) {
         const list = await this.boo.list(this.listRequest)
+        this.rawMediaList = list
         this.mediaList.set(list)
         this.hostInfo.set(hostInfo)
         if (list.list.length > 0) {
           this.setCurrentIndex(0)
         }
-        let c = 0
+        const observers = new Disposer()
         if(this.boo.isSupported("v")) {
           this.videoSupported.set(true)
-          c++
+          observers.add(disposableSubscribe(this.videoSelected, (value) => { this.onFilterChanged() }))
         }
         if(this.boo.isSupported("a")) {
           this.audioSupported.set(true)
-          c++
+          observers.add(disposableSubscribe(this.audioSelected, (value) => { this.onFilterChanged() }))
         }
         if(this.boo.isSupported("p")) {
           this.photoSupported.set(true)
-          c++
+          observers.add(disposableSubscribe(this.photoSelected, (value) => { this.onFilterChanged() }))
         }
-        if(c>1) {
+        if(observers.count>1) {
           this.typeSelectable.set(true)
         }
         return true
