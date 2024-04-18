@@ -1,5 +1,5 @@
 import {authentication} from "./Authentication"
-import {BooError} from "./BooError";
+import {BooError} from "../model/BooError";
 import type {
   IAuthToken,
   IBooProtocol,
@@ -261,7 +261,7 @@ class BooProtocolImpl implements IBooProtocol {
   }
 
   isSupported(type: MediaType): boolean {
-    return this.capabilities?.supportedTypes?.includes(type) ?? false
+    return this.capabilities?.types?.includes(type) ?? false
   }
 }
 

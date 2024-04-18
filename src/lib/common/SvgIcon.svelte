@@ -24,7 +24,7 @@
   export let role = ctx.role || "img";
   export let color = ctx.color || "currentColor";
   export let withEvents = ctx.withEvents || false;
-  export let ariaLabel = "svg-icon";
+  export let name = "svg-icon";
 </script>
 
 {#if withEvents}
@@ -34,7 +34,7 @@
     {...$$restProps}
     class={twMerge('shrink-0', sizes[size], $$props.class)}
     {role}
-    aria-label={ariaLabel}
+    aria-label={name}
     aria-describedby={undefined}
     viewBox="0 0 24 24"
     on:click
@@ -60,7 +60,7 @@
     {...$$restProps}
     class={twMerge('shrink-0', sizes[size], $$props.class)}
     {role}
-    aria-label={ariaLabel}
+    aria-label={name}
     aria-describedby={undefined}
     viewBox="0 0 24 24"
   >

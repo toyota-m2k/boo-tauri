@@ -1,5 +1,5 @@
 import PasswordDialog from "./PasswordDialog.svelte";
-import type {CompletionProc} from "../ViewModel";
+import type {CompletionProc} from "../model/ViewModel";
 import type {SvelteComponent} from "svelte";
 
 export async function showDialog<T>(createDialog:(params:any)=>SvelteComponent, props:[]=[]):Promise<T> {

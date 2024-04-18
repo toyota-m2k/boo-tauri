@@ -27,7 +27,7 @@ export interface ICapabilities {
   hasView: boolean
   authentication: boolean
   challenge: string | undefined
-  supportedTypes: string | undefined
+  types: string | undefined
 }
 
 export interface IAuthToken {

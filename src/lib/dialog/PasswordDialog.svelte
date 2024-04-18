@@ -1,8 +1,8 @@
 <script lang="ts">
   import {Button, Input, Label, Modal} from "flowbite-svelte";
-  import {type CompletionProc, viewModel} from "../ViewModel";
+  import {type CompletionProc, viewModel} from "../model/ViewModel";
   import {onMount, tick} from "svelte";
-  import {keyEvents} from "../KeyEvents";
+  import {keyEvents} from "../utils/KeyEvents";
 
   // export let promise: Promise<string|undefined>|undefined
   export let title: string = "Password"

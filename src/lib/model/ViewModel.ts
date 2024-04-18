@@ -1,16 +1,16 @@
-import {createBooProtocol} from "./BooProtocol";
+import {createBooProtocol} from "../protocol/BooProtocol";
 import {
   type CurrentValueReadable,
   currentValueStore,
   type CurrentValueStore
-} from "./CurrentValueStore";
+} from "../utils/CurrentValueStore";
 import {HostInfo} from "./HostInfo";
-import {launch} from "./Utils";
-import PasswordDialog from "./dialog/PasswordDialog.svelte";
-import {showDialog} from "./dialog/Dialog";
-import SettingsDialog from "./dialog/SettingsDialog.svelte";
+import {launch} from "../utils/Utils";
+import PasswordDialog from "../dialog/PasswordDialog.svelte";
+import {showDialog} from "../dialog/Dialog";
+import SettingsDialog from "../dialog/SettingsDialog.svelte";
 import {settings} from "./Settings";
-import type {IChapter, IChapterList, IListRequest, IMediaItem, IMediaList, PlayMode} from './IBooProtocol'
+import type {IChapter, IChapterList, IListRequest, IMediaItem, IMediaList, PlayMode} from '../protocol/IBooProtocol'
 
 export interface IViewModel {
   // Observable Properties
@@ -169,14 +169,21 @@ class ViewModel implements IViewModel {
         if (list.list.length > 0) {
           this.setCurrentIndex(0)
         }
+        let c = 0
         if(this.boo.isSupported("v")) {
           this.videoSupported.set(true)
+          c++
         }
         if(this.boo.isSupported("a")) {
           this.audioSupported.set(true)
+          c++
         }
         if(this.boo.isSupported("p")) {
           this.photoSupported.set(true)
+          c++
+        }
+        if(c>1) {
+          this.typeSelectable.set(true)
         }
         return true
       } else {

@@ -1,5 +1,5 @@
 import { readTextFile, writeTextFile } from '@tauri-apps/api/fs';
-import {currentValueStore} from "./CurrentValueStore";
+import {currentValueStore} from "../utils/CurrentValueStore";
 
 export class Preferences {
   private static readonly SETTINGS_FILE = 'settings.json'

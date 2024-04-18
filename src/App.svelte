@@ -1,11 +1,10 @@
 <script lang="ts">
-  import {viewModel} from "./lib/ViewModel";
-  import {HostInfo} from "./lib/HostInfo";
-  import List from "./lib/List.svelte";
+  import {viewModel} from "./lib/model/ViewModel";
   import Player from "./lib/Player.svelte";
   import TitleBar from "./lib/TitleBar.svelte";
   import {onMount, tick} from "svelte";
-  import {launch} from "./lib/Utils";
+  import {launch} from "./lib/utils/Utils";
+  import SidePanel from './lib/SidePanel.svelte'
 
   const SidePanelThreshold = 1024
   const currentIndex$ = viewModel.currentIndex;
@@ -85,7 +84,7 @@
 
 <main bind:this={container} class="my-container">
   <div bind:this={sidePanel} class="side-panel">
-    <List/>
+    <SidePanel/>
   </div>
 
   <!-- ページの主要コンテンツ -->

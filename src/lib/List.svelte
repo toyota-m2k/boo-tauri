@@ -1,11 +1,9 @@
 <script lang="ts">
-  import {viewModel} from "./ViewModel";
+  import {viewModel} from "./model/ViewModel";
   import {Table, TableBody, TableBodyCell, TableBodyRow, TableHeadCell} from "flowbite-svelte";
   import {onMount} from "svelte";
-  import {keyEvents} from "./KeyEvents";
-
-  let className = '';
-  export { className as class }
+  import {keyEvents} from "./utils/KeyEvents";
+  import {formatSize, formatTime} from './utils/Utils'
 
   const mediaList = viewModel.mediaList;
   const currentIndex = viewModel.currentIndex;
@@ -43,7 +41,7 @@
           <TableBodyCell on:click={ (e)=>onSelect(e,i) } tdClass="cursor-pointer whitespace-nowrap font-medium text-xs">
             <div class:bg-indigo-500={currentId===item.id} class="px-1 py-0.5">
               <div class:text-white={currentId===item.id}>{item.name}</div>
-              <div class:text-gray-300={currentId===item.id} class:text-gray-500={currentId!==item.id}>({item.duration})</div>
+              <div class:text-gray-300={currentId===item.id} class:text-gray-500={currentId!==item.id}>{item.duration!==undefined ? formatTime(item.duration) : formatSize(item.size) }</div>
             </div>
           </TableBodyCell>
         </TableBodyRow>

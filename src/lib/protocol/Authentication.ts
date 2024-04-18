@@ -1,4 +1,4 @@
-import {HashBuilder} from "./Hash";
+import {HashBuilder} from "../utils/Hash";
 
 interface IAuthentication {
   challengeFromResponse(res: Response): Promise<string>

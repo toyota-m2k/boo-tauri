@@ -1,4 +1,4 @@
-import type {IHostInfo} from './IBooProtocol'
+import type {IHostInfo} from '../protocol/IBooProtocol'
 
 export class HostInfo implements IHostInfo {
   displayName: string

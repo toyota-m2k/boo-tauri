@@ -1,9 +1,9 @@
 <script lang="ts">
   import {Button, Checkbox, Input, Label, Modal, NumberInput} from "flowbite-svelte";
   import {PlusOutline, TrashBinSolid} from "flowbite-svelte-icons";
-  import {settings} from "../Settings";
-  import {HostInfo} from "../HostInfo";
-  import type {CompletionProc} from "../ViewModel";
+  import {settings} from "../model/Settings";
+  import {HostInfo} from "../model/HostInfo";
+  import type {CompletionProc} from "../model/ViewModel";
 
   export let completion: CompletionProc<boolean>|undefined
   let addingHost = false

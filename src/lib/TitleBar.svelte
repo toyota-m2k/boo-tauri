@@ -1,11 +1,11 @@
 <script lang="ts">
-  import Viewbox from "./Viewbox.svelte";
+  import Viewbox from "./common/Viewbox.svelte";
   import {createEventDispatcher} from 'svelte';
-  import {viewModel} from "./ViewModel";
+  import {viewModel} from "./model/ViewModel";
   import {Button, GradientButton} from "flowbite-svelte";
   // import {CogOutline} from "flowbite-svelte-icons";
   import {ICON_COG,ICON_REPEAT,ICON_SINGLE,ICON_SEQUENTIAL} from './Icons.js'
-  import SvgIcon from './SvgIcon.svelte'
+  import SvgIcon from './common/SvgIcon.svelte'
 
   export let title: string;
   const playMode = viewModel.playMode;

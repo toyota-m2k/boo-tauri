@@ -1,8 +1,8 @@
 <script lang="ts">
-  import {viewModel} from "./ViewModel";
+  import {viewModel} from "./model/ViewModel";
   import type {Readable} from "svelte/store";
-  import type {IMediaItem} from './IBooProtocol'
-  import {launch} from './Utils'
+  import type {IMediaItem} from './protocol/IBooProtocol'
+  import {launch} from './utils/Utils'
   import {tick} from 'svelte'
 
   let player: HTMLVideoElement

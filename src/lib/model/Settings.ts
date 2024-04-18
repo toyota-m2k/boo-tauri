@@ -1,7 +1,7 @@
 import { HostInfo } from "./HostInfo";
 import {Preferences} from "./Preferences";
-import {launch} from "./Utils";
-import type {PlayMode} from './IBooProtocol'
+import {launch} from "../utils/Utils";
+import type {PlayMode} from '../protocol/IBooProtocol'
 
 export interface ISettings {
   currentHost: HostInfo | undefined

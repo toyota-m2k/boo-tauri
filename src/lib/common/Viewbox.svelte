@@ -1,7 +1,7 @@
 <script lang="ts">
   import {onDestroy, onMount, tick} from 'svelte'
   import {twMerge} from 'tailwind-merge'
-  import {launch} from './Utils'
+  import {launch} from '../utils/Utils'
 
   let className = '';
   export let text = '';
@@ -30,7 +30,7 @@
   });
 
   function adjustFontSize() {
-    let containerWidth = container.clientWidth
+    let containerWidth = container.offsetWidth
 
     container.style.fontSize = `${maxFontSize}px`
     let maxWidth = container.scrollWidth
