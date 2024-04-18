@@ -2,17 +2,32 @@
   import {viewModel} from "./model/ViewModel";
   import type {Readable} from "svelte/store";
   import type {IMediaItem} from './protocol/IBooProtocol'
-  import {launch} from './utils/Utils'
+  import {delay, launch} from './utils/Utils'
   import {tick} from 'svelte'
+  import {settings} from './model/Settings'
 
   let player: HTMLVideoElement
   let currentIndex$: Readable<number> = viewModel.currentIndex
+  let playMode$: Readable<string> = viewModel.playMode
   let currentMediaItem: IMediaItem | undefined
   let currentMediaUrl: string | undefined
   let currentMediaType: string | undefined
+  let abortController: AbortController|undefined
   $: currentMediaItem = viewModel.mediaItemAt($currentIndex$)
   $: currentMediaUrl = currentMediaItem ? viewModel.mediaUrl(currentMediaItem) : undefined
   $: currentMediaType = currentMediaItem?.type
+  $: if(currentMediaItem && currentMediaItem.media==='p' && $playMode$==='sequential') {
+      launch(async ()=> {
+        abortController = abortController ?? new AbortController()
+        await delay(settings.slideShowInterval * 1000, abortController.signal)
+        viewModel.next()
+      });
+    } else {
+      if(abortController) {
+        abortController.abort()
+        abortController = undefined
+      }
+    }
 
   let duration: number = 0
   let currentPosition$ = viewModel.currentPosition

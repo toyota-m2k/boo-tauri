@@ -14,6 +14,10 @@ export class Disposer implements IDisposable {
     }
   }
 
+  get count():number {
+    return this.disposables.length
+  }
+
   dispose(): void {
     this.disposables.forEach(d => d.dispose())
     this.disposables = []

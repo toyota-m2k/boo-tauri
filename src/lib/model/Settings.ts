@@ -7,6 +7,7 @@ export interface ISettings {
   currentHost: HostInfo | undefined
   hostInfoList: HostInfo[]
   playMode: PlayMode
+  slideShowInterval: number
   load(): Promise<void>
   save(): Promise<void>
 }
@@ -29,6 +30,13 @@ class Settings implements ISettings {
 
   set hostInfoList(hostInfoList: HostInfo[]) {
     this.preferences.set('hostInfoList', hostInfoList)
+  }
+
+  get slideShowInterval(): number {
+    return this.preferences.get('slideShowInterval', 5)
+  }
+  set slideShowInterval(interval: number) {
+    this.preferences.set('slideShowInterval', interval)
   }
 
   get playMode(): PlayMode {

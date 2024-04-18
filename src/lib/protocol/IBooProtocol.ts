@@ -48,6 +48,7 @@ export interface IMediaItem {
   id: string,         // media id
   name: string,
   type: string,       // mp4 | jpg | mp3
+  media: string,      // "v" | "a" | "p"
   size: number,
   volume: number | undefined,
   duration: number | undefined,

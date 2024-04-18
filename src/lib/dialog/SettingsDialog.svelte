@@ -13,6 +13,7 @@
   let newDisplayName = currentHost ? currentHost.displayName : ""
   let newHostPort = currentHost ? currentHost.port : 3500
   let newHostAddress = currentHost ? currentHost.host : "localhost"
+  let slideShowInterval = settings.slideShowInterval
   let modified = false
 
   function isSameHost(h1: HostInfo|undefined, h2: HostInfo|undefined):boolean {
@@ -79,6 +80,9 @@
       if(!isSameHost(currentHost,settings.currentHost)) {
           settings.currentHost = currentHost
       }
+      if(slideShowInterval!==settings.slideShowInterval) {
+        settings.slideShowInterval = slideShowInterval
+      }
       await settings.save()
       completion?.(true)
     } else {
@@ -89,7 +93,7 @@
 </script>
 
 <Modal title="Settings" open={true} dismissable={false}>
-  <div class="mb-6">
+  <div class="mb-1">
     {#if !addingHost && !editingHost}
       <div class="flex flex-row items-center">
         <Label class="mr-2">Hosts</Label>
@@ -115,6 +119,14 @@
           </div>
         {/each}
       </div>
+      <div>
+        <div class="flex items-center justify-start mt-2 gap-1">
+          <span>Slide Show Interval</span>
+          <NumberInput min="1" max="3600" bind:value={slideShowInterval} placeholder="Slide Show Interval" class="w-1/6" />
+          <span>second(s)</span>
+        </div>
+
+      </div>
 
     {:else}
       <Label>Display name</Label>
@@ -124,16 +136,18 @@
       <Label>Port</Label>
       <NumberInput bind:value={newHostPort} placeholder="IP Address" class="mb-2" />
 
-      <div class="flex flex-row items-center justify-center mt-2">
-        <Button color="primary" size="xs" class="mr-2 w-20" on:click={()=>addHost()}>{editingHost?"Apply":"Add"}</Button>
+      <div class="flex flex-row items-center justify-center mt-4">
+        <Button color="primary" size="xs" class="mr-4 w-20" on:click={()=>addHost()}>{editingHost?"Apply":"Add"}</Button>
         <Button color="alternative" size="xs" class="w-20" on:click={endAddingHost}>Cancel</Button>
       </div>
     {/if}
   </div>
   <svelte:fragment slot="footer">
     {#if !addingHost && !editingHost}
-      <Button on:click={()=>complete(true)} class="mr-2">OK</Button>
-      <Button color="alternative" on:click={()=>complete(false)}>Cancel</Button>
+      <div class="flex flex-row items-center justify-center w-full">
+        <Button on:click={()=>complete(true)} class="mr-4">OK</Button>
+        <Button color="alternative" on:click={()=>complete(false)}>Cancel</Button>
+      </div>
     {/if}
   </svelte:fragment>
 

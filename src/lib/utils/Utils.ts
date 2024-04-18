@@ -1,8 +1,33 @@
 export function launch<T>(fn: () => Promise<T>) {
-  (async () => {
-    return fn()
-  })()
+  fn().catch((e) => {
+    console.error(e)
+  })
 }
+
+export async function delay(msec: number, signal?: AbortSignal): Promise<void> {
+  let abortListener: (() => void) | undefined = undefined
+  const promise = new Promise((resolve, reject) => {
+    let timeout: number | undefined = undefined
+    if (signal !== undefined) {
+      abortListener = () => {
+        if (timeout !== undefined) {
+          clearTimeout(timeout)
+        }
+        reject(signal.reason)
+      }
+      signal.addEventListener("abort", abortListener)
+    }
+    timeout = setTimeout(resolve, msec)
+  })
+  try {
+    await promise
+  } finally {
+    if (signal !== undefined && abortListener !== undefined) {
+      signal.removeEventListener("abort", abortListener)
+    }
+  }
+}
+
 
 export function formatTime(time: number): string {
   const h = Math.floor(time / 3600)
