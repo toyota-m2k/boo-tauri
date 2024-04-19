@@ -17,16 +17,15 @@
   $: currentMediaUrl = currentMediaItem ? viewModel.mediaUrl(currentMediaItem) : undefined
   $: currentMediaType = currentMediaItem?.type
   $: if(currentMediaItem && currentMediaItem.media==='p' && $playMode$==='sequential') {
+      if(abortController) {
+        abortController.abort()
+        abortController = undefined
+      }
       launch(async ()=> {
         abortController = abortController ?? new AbortController()
         await delay(settings.slideShowInterval * 1000, abortController.signal)
         viewModel.next()
       });
-    } else {
-      if(abortController) {
-        abortController.abort()
-        abortController = undefined
-      }
     }
 
   let duration: number = 0

@@ -28,7 +28,7 @@ export class Preferences {
           {
             displayName: "2F-MakibaO-SA",
             host: "192.168.0.151",
-            port: 6001
+            port: 3800
           },
           {
             displayName: "1F-TamayoPtx-Boo",
@@ -38,7 +38,7 @@ export class Preferences {
           {
             displayName: "1F-TamayoPtx-SA",
             host: "192.168.0.152",
-            port: 6001
+            port: 3800
           },
         ],
         currentHost: {
