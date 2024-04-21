@@ -9,6 +9,8 @@ import type {
   IListRequest, IMark, IMediaItem,
   IMediaList, IRatingList, IRequtation, MediaType
 } from './IBooProtocol'
+import {fetchWithTimeout} from "../utils/Utils";
+import {logger} from "../model/DebugLog";
 
 class BooProtocolImpl implements IBooProtocol {
   private hostInfo: IHostInfo | undefined
@@ -36,6 +38,7 @@ class BooProtocolImpl implements IBooProtocol {
       this.challenge = this.capabilities?.challenge
       return this.capabilities !== undefined
     } catch (e: any) {
+      logger.error(`cannot setup for ${hostInfo.host}:${hostInfo.port}`)
       console.error(e)
       return false
     }
@@ -43,7 +46,7 @@ class BooProtocolImpl implements IBooProtocol {
 
   private async getCapabilities(hostInfo: IHostInfo): Promise<ICapabilities> {
     const url = this.baseUri + 'capability'
-    const r = await fetch(url)
+    const r = await fetchWithTimeout(url, 3000)
     if (!r.ok) {
       throw new Error(`fetch failed: ${r.status}`)
     }
@@ -140,6 +143,21 @@ class BooProtocolImpl implements IBooProtocol {
       }
     }
     return await r.json() as T
+  }
+
+  async noop(): Promise<boolean> {
+    if(this.capabilities?.authentication) {
+      return await this.withAuthToken(async (token?: string) => {
+        const query = new URLSearchParams()
+        if (token) {
+          query.set('auth', token)
+        }
+        const url = this.baseUri + 'noop?' + query.toString()
+        return (await fetchWithTimeout(url, 3000))?.ok ?? false
+      })
+    } else {
+      return true
+    }
   }
 
   async list(req: IListRequest): Promise<IMediaList> {

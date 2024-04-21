@@ -105,6 +105,8 @@ export interface IRatingList {
 export interface IBooProtocol {
   setup(hostInfo: IHostInfo): Promise<boolean>
 
+  noop(): Promise<boolean>
+
   list(req: IListRequest): Promise<IMediaList>
 
   chapters(mediaId: string): Promise<IChapterList>

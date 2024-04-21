@@ -48,3 +48,34 @@ export function formatSize(size: number): string {
   }
   return `${(size / 1024 / 1024 / 1024).toFixed(2)}GB`
 }
+
+export interface RequestInitWithTimeout extends RequestInit {
+  timeout?: number
+}
+
+export function fetchWithTimeout(url:RequestInfo | URL, init?:RequestInitWithTimeout|number) : Promise<Response> {
+  if(init !== undefined) {
+    if(typeof init === "number") {
+      init = {timeout: init}
+    }
+    if(init.timeout !== undefined) {
+      const controller = new AbortController();
+      const signal = controller.signal;
+
+      // タイムアウトを設定する
+      const timeoutId = setTimeout(() => controller.abort(), init.timeout);
+      return fetch(url, { ...init,signal })
+        .then(response => {
+          clearTimeout(timeoutId);
+          return response;
+        })
+        .catch(error => {
+          if (error.name === 'AbortError') {
+            throw new Error('Response timed out');
+          }
+          throw error;
+        });
+    }
+  }
+  return fetch(url, init)
+}

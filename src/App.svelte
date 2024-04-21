@@ -5,6 +5,9 @@
   import {onMount, tick} from "svelte";
   import {launch} from "./lib/utils/Utils";
   import SidePanel from './lib/SidePanel.svelte'
+  import DebugView from "./lib/DebugView.svelte";
+  import {logger} from "./lib/model/DebugLog";
+  import {keyEvents} from "./lib/utils/KeyEvents";
 
   const SidePanelThreshold = 1024
   const currentIndex$ = viewModel.currentIndex;
@@ -21,6 +24,7 @@
   let headerElem: HTMLElement
   let mainContent: HTMLElement
   let sidePanel: HTMLElement
+  const debugLog = logger.enabled
   const sidePanelWidth = getComputedStyle(document.documentElement).getPropertyValue('--side-panel-width')
 
   // region Side Panel
@@ -31,16 +35,19 @@
     } else {
       mainContent.style.left = `${sidePanelWidth}`
     }
+    logger.info(`showSidePanel: ${sidePanel.style.left}`)
   }
   function hideSidePanel() {
     sidePanel.style.left = `-${sidePanelWidth}`
     mainContent.style.left = '0'
+    logger.info(`hideSidePanel: ${sidePanel.style.left}`)
   }
   function isSidePanelShown() {
     const org = sidePanel.style.left
     return !org || org === '0px' || org === '0'|| org === ''
   }
   function toggleSidePanel() {
+    logger.info(`toggleSidePanel`)
     if(isSidePanelShown()) {
       hideSidePanel()
     } else {
@@ -73,6 +80,9 @@
   // viewModel.setHost(new HostInfo("Boo", "192.168.0.151", 6001))
   onMount(async ()=> {
     await viewModel.initialize()
+    keyEvents.register("KeyL", {ctrl:true, shift:true}, () => {
+      logger.enabled.set(!logger.enabled.currentValue)
+    })
   })
 
 </script>
@@ -92,6 +102,16 @@
     <!-- コンテンツ -->
     <Player/>
   </div>
+
+  {#if $loading$}
+    <div class="loading absolute top-0 bottom-0 left-0 right-0 flex items-center justify-center bg-gray-500">
+      <div class="spinner fill-gray-200">Loading ...</div>
+    </div>
+  {/if}
+
+  {#if $debugLog}
+    <DebugView/>
+  {/if}
 </main>
 
 <!-- ダイアログ -->

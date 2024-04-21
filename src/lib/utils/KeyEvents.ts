@@ -1,13 +1,19 @@
 interface IKeyEvents {
-  register: (keyCode:string, callback:()=>void) => void
+  register(key:string, { shift, ctrl, alt}:{shift?:boolean, ctrl?:boolean, alt?:boolean}, callback:()=>void):void
+
   unregister: (keyCode:string) => void
 }
 
 class KeyEvents implements IKeyEvents {
   private keyMap: {[key:string]:()=>void} = {}
-  register = (keyCode:string, callback:()=>void) => {
-    this.keyMap[keyCode] = callback
+
+  private genKey(keyCode:string, { shift, ctrl, alt}:{shift?:boolean, ctrl?:boolean, alt?:boolean}) {
+    return `${keyCode}/${shift?"S":""}${ctrl?"C":""}${alt?"A":""}`
   }
+  register(keyCode:string, { shift, ctrl, alt}:{shift?:boolean, ctrl?:boolean, alt?:boolean}, callback:()=>void):void {
+    this.keyMap[this.genKey(keyCode, {shift, ctrl, alt})] = callback
+  }
+
   unregister = (keyCode:string) => {
     delete this.keyMap[keyCode]
   }
@@ -16,10 +22,9 @@ class KeyEvents implements IKeyEvents {
     window.addEventListener("keydown", (e)=>{
       if(e.defaultPrevented) return
 
-      let handled = false
-      const fn = this.keyMap[e.key]
+      const fn = this.keyMap[this.genKey(e.code, {shift:e.shiftKey, ctrl:e.ctrlKey, alt:e.altKey})]
       if(fn) {
-        fn()
+          fn()
         // イベントが処理された場合は「ダブルアクション」を抑制
         e.preventDefault()
       }

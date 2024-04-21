@@ -26,8 +26,8 @@
   }
 
   onMount(() => {
-    keyEvents.register("ArrowUp", () => viewModel.prev())
-    keyEvents.register("ArrowDown", () => viewModel.next()) 
+    keyEvents.register("ArrowUp",{}, () => viewModel.prev())
+    keyEvents.register("ArrowDown", {}, () => viewModel.next())
   });
 
 </script>

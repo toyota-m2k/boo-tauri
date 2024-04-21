@@ -223,9 +223,10 @@ class ViewModel implements IViewModel {
   setCurrentIndex(index: number): boolean {
     const mediaList = this.mediaList.currentValue
     if (0 <= index && index < mediaList.list.length) {
-      this.chapterList.set(undefined)
-      this._currentIndex.set(index)
       launch(async () => {
+        await this.boo.noop()
+        this.chapterList.set(undefined)
+        this._currentIndex.set(index)
         const cl = await this.boo.chapters(mediaList.list[index].id)
         if (index == this.currentIndex.currentValue) {   // check if the index is still the same
           this.chapterList.set(cl)
