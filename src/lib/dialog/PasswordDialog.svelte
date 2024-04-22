@@ -16,8 +16,8 @@
   }
 
   onMount(()=>{
-    keyEvents.register("Enter", ()=>complete(true))
-    keyEvents.register("Escape", ()=>complete(false))
+    keyEvents.register("Enter", {}, ()=>complete(true))
+    keyEvents.register("Escape", {}, ()=>complete(false))
     tick().then(()=>textInput.focus())
     return ()=>{
       keyEvents.unregister("Enter")
