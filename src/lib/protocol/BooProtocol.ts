@@ -136,6 +136,9 @@ class BooProtocolImpl implements IBooProtocol {
   }
 
   private async handleResponse<T>(r: Response): Promise<T> {
+    return await (await this.handleResponseRaw(r)).json() as T
+  }
+  private async handleResponseRaw(r:Response):Promise<Response> {
     if (!r.ok) {
       if (r.status === 401) {
         this.challenge = (await r.json())["challenge"] as string
@@ -144,17 +147,16 @@ class BooProtocolImpl implements IBooProtocol {
         throw new Error(`fetch failed: ${r.status}`)
       }
     }
-    return await r.json() as T
+    return r
   }
 
   async noop(): Promise<boolean> {
     if(this.capabilities?.authentication) {
       try {
         return await this.withAuthToken(async (token?: string) => {
-          const url = this.baseUri + 'auth/' + token ?? ''
+          const url = this.baseUri + 'auth/' + (token ?? '')
           const r = await fetchWithTimeout(url, 3000)
-          await this.handleResponse(r)
-          return true
+          return (await (await this.handleResponseRaw(r)).text()).toLowerCase() === 'ok'
         })
       } catch (e) {
         logger.error(`re-auth failed: ${e}`)
