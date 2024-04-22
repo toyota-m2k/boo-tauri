@@ -119,7 +119,9 @@ class BooProtocolImpl implements IBooProtocol {
     while (true) {
       try {
         if (this.authToken) {
-          return await fn(this.authToken.token)
+          const ret = await fn(this.authToken.token)
+          logger.debug(`result = ${JSON.stringify(ret)}`)
+          return ret
         } else {
           throw new BooError('auth', 'auth token is not set.')
         }
@@ -147,14 +149,17 @@ class BooProtocolImpl implements IBooProtocol {
 
   async noop(): Promise<boolean> {
     if(this.capabilities?.authentication) {
-      return await this.withAuthToken(async (token?: string) => {
-        const query = new URLSearchParams()
-        if (token) {
-          query.set('auth', token)
-        }
-        const url = this.baseUri + 'noop?' + query.toString()
-        return (await fetchWithTimeout(url, 3000))?.ok ?? false
-      })
+      try {
+        return await this.withAuthToken(async (token?: string) => {
+          const url = this.baseUri + 'auth/' + token ?? ''
+          const r = await fetchWithTimeout(url, 3000)
+          await this.handleResponse(r)
+          return true
+        })
+      } catch (e) {
+        logger.error(`re-auth failed: ${e}`)
+        return false
+      }
     } else {
       return true
     }

@@ -8,6 +8,7 @@
   import DebugView from "./lib/DebugView.svelte";
   import {logger} from "./lib/model/DebugLog";
   import {keyEvents} from "./lib/utils/KeyEvents";
+  import { fade } from 'svelte/transition'
 
   const SidePanelThreshold = 1024
 
@@ -111,7 +112,7 @@
   </div>
 
   {#if $loading$}
-    <div class="loading absolute top-0 bottom-0 left-0 right-0 flex items-center justify-center bg-gray-500">
+    <div transition:fade class="loading absolute top-0 bottom-0 left-0 right-0 flex items-center justify-center bg-gray-500">
       <div class="spinner fill-gray-200">Loading ...</div>
     </div>
   {/if}

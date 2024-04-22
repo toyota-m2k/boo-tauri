@@ -4,6 +4,8 @@
   import SvgIcon from "./common/SvgIcon.svelte";
   import {launch} from "./utils/Utils";
   import {tick} from "svelte";
+  import { fade } from 'svelte/transition'
+
   const messages = logger.messages;
   let listContainer: HTMLDivElement;
   $: if($messages.length>0) {
@@ -14,7 +16,7 @@
   }
 </script>
 
-<div class="absolute top-4 bottom-4 right-4 w-1/4 bg-green-800 overflow-clip border-blue-400 border-2 rounded">
+<div transition:fade class="absolute top-4 bottom-4 right-4 w-1/4 bg-green-800 overflow-clip border-blue-400 border-2 rounded">
   <div class="h-8 flex flex-row-reverse bg-blue-400 items-center">
     <Button size="xs" class="h-5 mr-2" on:click={()=>logger.clear()}>
       <SvgIcon class="h-4 w-4" name="clear" path="M 6 19A 2,2,0,0,0,8,21H 16A 2,2,0,0,0,18,19V 7H 6V 19M 8 9H 16V 19H 8V 9M 15.5 4L 14.5 3H 9.5L 8.5 4H 5V 6H 19V 4H 15.5Z"/>
