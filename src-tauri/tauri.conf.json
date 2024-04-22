@@ -19,6 +19,18 @@
       "fs": {
         "all": true,
         "scope": ["settings.json"]
+      },
+      "window": {
+        "all": false,
+        "close": true,
+        "hide": true,
+        "show": true,
+        "maximize": true,
+        "minimize": true,
+        "unmaximize": true,
+        "unminimize": true,
+        "setFullscreen": true,
+        "startDragging": true
       }
     },
     "windows": [

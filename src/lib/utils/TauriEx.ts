@@ -4,13 +4,11 @@ import {logger} from "../model/DebugLog";
 export async function tauriFullScreen(flag:boolean): Promise<void> {
   try {
     if (flag) {
-      if (!await getCurrent().isMaximized()) {
-        return await getCurrent().maximize()
-      }
+      await getCurrent().maximize()
+      await getCurrent().setFullscreen(true)
     } else {
-      if (await getCurrent().isMaximized()) {
-        return await getCurrent().unmaximize()
-      }
+      await getCurrent().setFullscreen(false)
+      await getCurrent().unmaximize()
     }
   } catch(e) {
     logger.error('Failed to set fullscreen')
