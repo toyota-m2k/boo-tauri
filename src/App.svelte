@@ -9,6 +9,7 @@
   import {logger} from "./lib/model/DebugLog";
   import {keyEvents} from "./lib/utils/KeyEvents";
   import { fade } from 'svelte/transition'
+  import {tauriFullScreen} from "./lib/utils/TauriEx";
 
   const SidePanelThreshold = 1024
 
@@ -24,9 +25,14 @@
 
   let container: HTMLElement
   let headerElem: HTMLElement
+  let playerElem: HTMLElement
+
   // let mainContent: HTMLElement
   // let sidePanel: HTMLElement
   const debugLog = logger.enabled
+
+  let titleBarHeight = 50
+  let titleBarShown = true
 
   let sidePanelWidth = 250 //getComputedStyle(document.documentElement).getPropertyValue('--side-panel-width')
   let sidePanelShown = true
@@ -91,22 +97,33 @@
     keyEvents.register("KeyL", {ctrl:true, shift:true}, () => {
       logger.enabled.set(!logger.enabled.currentValue)
     })
+    keyEvents.register("KeyO", {ctrl:true, shift:true}, () => {
+      if(document.fullscreenElement) {
+        document.exitFullscreen()
+        tauriFullScreen(false)
+      } else {
+        playerElem.requestFullscreen()
+        tauriFullScreen(true)
+      }
+    })
   })
+
+
 
 </script>
 
-<svelte:window on:resize={onWindowSizeChanged} />
-<div bind:this={headerElem} class="header">
+<svelte:window on:resize={onWindowSizeChanged}/>
+<div bind:this={headerElem} class="title-bar" style:height={`${titleBarHeight}px`} style:top={titleBarShown ? "0px" : `-${titleBarHeight}px`}>
   <TitleBar title={title} on:toggleSidePanel={()=> sidePanelShown=!sidePanelShown}/>
 </div>
 
-<main bind:this={container} class="my-container">
+<main bind:this={container} class="my-container" style:top={titleBarShown ? `${titleBarHeight}px` : "0px"}>
   <div class="side-panel" style:width="{sidePanelWidth}px" style:left={sidePanelShown ? "0px" : `-${sidePanelWidth}px`}>
     <SidePanel/>
   </div>
 
   <!-- ページの主要コンテンツ -->
-  <div class="main-content" style:left={sidePanelOverWrap||!sidePanelShown ? "0px" : `${sidePanelWidth}px`}>
+  <div bind:this={playerElem} class="main-content" style:left={sidePanelOverWrap||!sidePanelShown ? "0px" : `${sidePanelWidth}px`}>
     <!-- コンテンツ -->
     <Player/>
   </div>
@@ -129,7 +146,7 @@
 <!--<SettingsDialog/>-->
 
 <style lang="scss">
-  .header {
+  .title-bar {
     position: fixed; /* ヘッダーを固定 */
     top: 0; /* 上部から0pxの位置に */
     left: 0; /* 左端から0pxの位置に */

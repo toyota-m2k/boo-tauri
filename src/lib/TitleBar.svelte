@@ -73,6 +73,7 @@
 
 <style lang="scss">
   .header {
+    height: 100%;
     padding: 2px 10px; /* パディング */
     box-sizing: border-box;
     display: flex; /* フレックスボックスを使用 */

@@ -1,5 +1,6 @@
 import { readTextFile, writeTextFile } from '@tauri-apps/api/fs';
 import {currentValueStore} from "../utils/CurrentValueStore";
+import {logger} from "./DebugLog";
 
 export class Preferences {
   private static readonly SETTINGS_FILE = 'settings.json'
@@ -17,7 +18,7 @@ export class Preferences {
       this.settings = JSON.parse(settings)
       this.dirty = false
     } catch (error) {
-      console.error('Failed to load settings', error)
+      logger.error('Failed to load settings.json')
       this.settings = {
         hostInfoList: [
           {
@@ -56,7 +57,7 @@ export class Preferences {
     try {
       await writeTextFile(this.fileName, JSON.stringify(this.settings))
     } catch (error) {
-      console.error('Failed to save settings', error)
+      logger.error('Failed to save settings.json')
     }
   }
 
