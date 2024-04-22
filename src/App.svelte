@@ -10,6 +10,7 @@
   import {keyEvents} from "./lib/utils/KeyEvents";
 
   const SidePanelThreshold = 1024
+
   const currentIndex$ = viewModel.currentIndex;
   $: title = viewModel.mediaItemAt($currentIndex$)?.name ?? "No Media"
   const loading$ = viewModel.isBusy;
@@ -22,39 +23,42 @@
 
   let container: HTMLElement
   let headerElem: HTMLElement
-  let mainContent: HTMLElement
-  let sidePanel: HTMLElement
+  // let mainContent: HTMLElement
+  // let sidePanel: HTMLElement
   const debugLog = logger.enabled
-  const sidePanelWidth = getComputedStyle(document.documentElement).getPropertyValue('--side-panel-width')
+
+  let sidePanelWidth = 250 //getComputedStyle(document.documentElement).getPropertyValue('--side-panel-width')
+  let sidePanelShown = true
+  let sidePanelOverWrap = false
 
   // region Side Panel
-  function showSidePanel(overwrap:boolean) {
-    sidePanel.style.left = '0'
-    if (overwrap) {
-      mainContent.style.left = '0'
-    } else {
-      mainContent.style.left = `${sidePanelWidth}`
-    }
-    logger.info(`showSidePanel: ${sidePanel.style.left}`)
-  }
-  function hideSidePanel() {
-    sidePanel.style.left = `-${sidePanelWidth}`
-    mainContent.style.left = '0'
-    logger.info(`hideSidePanel: ${sidePanel.style.left}`)
-  }
-  function isSidePanelShown() {
-    const org = sidePanel.style.left
-    return !org || org === '0px' || org === '0'|| org === ''
-  }
-  function toggleSidePanel() {
-    logger.info(`toggleSidePanel`)
-    if(isSidePanelShown()) {
-      hideSidePanel()
-    } else {
-      showSidePanel(window.innerWidth<SidePanelThreshold)
-    }
-    updateBodyPadding() // 初めてサイドパネルを表示するとき用
-  }
+  // function showSidePanel(overwrap:boolean) {
+  //   sidePanel.style.left = '0'
+  //   if (overwrap) {
+  //     mainContent.style.left = '0'
+  //   } else {
+  //     mainContent.style.left = `${sidePanelWidth}`
+  //   }
+  //   logger.info(`showSidePanel: sidePanel.left=${sidePanel.style.left} / mainContent.left=${mainContent.style.left}`)
+  // }
+  // function hideSidePanel() {
+  //   sidePanel.style.left = `-${sidePanelWidth}`
+  //   mainContent.style.left = '0'
+  //   logger.info(`hideSidePanel: ${sidePanel.style.left}`)
+  // }
+  // function isSidePanelShown() {
+  //   const org = sidePanel.style.left
+  //   return !org || org === '0px' || org === '0'|| org === ''
+  // }
+  // function toggleSidePanel() {
+  //   logger.info(`toggleSidePanel`)
+  //   if(isSidePanelShown()) {
+  //     hideSidePanel()
+  //   } else {
+  //     showSidePanel(window.innerWidth<SidePanelThreshold)
+  //   }
+  //   updateBodyPadding() // 初めてサイドパネルを表示するとき用
+  // }
   // endregion
 
 
@@ -66,13 +70,16 @@
   }
 
   function onWindowSizeChanged() {
+    logger.info("sidePanelWidth: " + sidePanelWidth)
     // 画面幅が  px以上になったらサイドパネルを表示する
     if (window.innerWidth >= SidePanelThreshold) {
-      showSidePanel(false)
+      sidePanelShown = true
+      sidePanelOverWrap = false
     }
     // 画面幅が SidePanelThreshold px未満になったらサイドパネルを非表示にする
     else {
-      hideSidePanel()
+      sidePanelShown = false
+      sidePanelOverWrap = true
     }
     updateBodyPadding()
   }
@@ -89,16 +96,16 @@
 
 <svelte:window on:resize={onWindowSizeChanged} />
 <div bind:this={headerElem} class="header">
-  <TitleBar title={title} on:toggleSidePanel={toggleSidePanel}/>
+  <TitleBar title={title} on:toggleSidePanel={()=> sidePanelShown=!sidePanelShown}/>
 </div>
 
 <main bind:this={container} class="my-container">
-  <div bind:this={sidePanel} class="side-panel">
+  <div class="side-panel" style:width="{sidePanelWidth}px" style:left={sidePanelShown ? "0px" : `-${sidePanelWidth}px`}>
     <SidePanel/>
   </div>
 
   <!-- ページの主要コンテンツ -->
-  <div bind:this={mainContent} class="main-content">
+  <div class="main-content" style:left={sidePanelOverWrap||!sidePanelShown ? "0px" : `${sidePanelWidth}px`}>
     <!-- コンテンツ -->
     <Player/>
   </div>
@@ -145,10 +152,10 @@
   /* サイドパネルの基本スタイル */
   .side-panel {
     position: absolute;
-    width: var(--side-panel-width);
+    //width: 250px;
     top: 0;
     bottom: 0;
-    left: calc(-1 * var(--side-panel-width));
+    left: 0;
     transition: left 0.3s;
     background-color: #f0f0f0;
     overflow-y: auto; /* 縦方向のスクロールバーを有効にする */

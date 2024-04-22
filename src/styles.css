@@ -13,7 +13,7 @@
   -moz-osx-font-smoothing: grayscale;
   -webkit-text-size-adjust: 100%;
 
-  --side-panel-width: 250px; /* サイドパネルの幅を変数として定義 */
+  /*--side-panel-width: 250px; !* サイドパネルの幅を変数として定義 ---> なぜか mac版でビルドすると読めない*!*/
 }
 
 @media (prefers-color-scheme: dark) {
