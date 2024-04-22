@@ -97,7 +97,7 @@
     keyEvents.register("KeyL", {ctrl:true, shift:true}, () => {
       logger.enabled.set(!logger.enabled.currentValue)
     })
-    keyEvents.register("KeyO", {ctrl:true, shift:true}, () => {
+    keyEvents.register("F11", {}, () => {
       if(document.fullscreenElement) {
         document.exitFullscreen()
         tauriFullScreen(false)
