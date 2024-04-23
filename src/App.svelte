@@ -98,12 +98,14 @@
       logger.enabled.set(!logger.enabled.currentValue)
     })
     keyEvents.register("F11", {}, () => {
-      if(document.fullscreenElement) {
+      if(!document.fullscreenElement) {
+        // プレーヤーペインをフルスクリーンにする
+        playerElem.requestFullscreen()
+        // TauriのWindowを最大化して、Windowのタイトルバーを非表示にする
+        tauriFullScreen(true)
+      } else {
         document.exitFullscreen()
         tauriFullScreen(false)
-      } else {
-        playerElem.requestFullscreen()
-        tauriFullScreen(true)
       }
     })
   })
