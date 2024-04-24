@@ -1,8 +1,9 @@
 <script lang="ts">
   import {Button, Input, Label, Modal} from "flowbite-svelte";
-  import {type CompletionProc, viewModel} from "../model/ViewModel";
-  import {onMount, tick} from "svelte";
-  import {keyEvents} from "../utils/KeyEvents";
+  import {type CompletionProc} from "../model/ViewModel";
+  import {onDestroy, onMount, tick} from "svelte";
+  import {createKeyEvents, keyFor} from "../utils/KeyEvents";
+  import {switchKeyEventCaster} from "../utils/KeyEvents.js";
 
   // export let promise: Promise<string|undefined>|undefined
   export let title: string = "Password"
@@ -15,14 +16,20 @@
     // viewModel.closePasswordDialog(ok ? password : undefined)
   }
 
-  onMount(()=>{
-    keyEvents.register("Enter", {}, ()=>complete(true))
-    keyEvents.register("Escape", {}, ()=>complete(false))
-    tick().then(()=>textInput.focus())
-    return ()=>{
-      keyEvents.unregister("Enter")
-      keyEvents.unregister("Escape")
-    }
+  let resumeKeys:()=>void
+  onMount(async ()=>{
+    const dlgKeyEvents = createKeyEvents()
+    await dlgKeyEvents.beginRegister((registry)=>{
+      registry
+        .register(keyFor("Enter", {key:"Enter", asCode:true}), ()=>complete(true))
+        .register(keyFor("Escape", {key:"Escape", asCode:true}), ()=>complete(false))
+    })
+    resumeKeys = await switchKeyEventCaster(dlgKeyEvents)
+    await tick()
+    textInput.focus()
+  })
+  onDestroy(()=> {
+    resumeKeys?.()
   })
 
 </script>

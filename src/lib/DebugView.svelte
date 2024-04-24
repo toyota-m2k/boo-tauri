@@ -41,4 +41,7 @@
   .info {
     color: blue;
   }
+  .debug {
+    color: green;
+  }
 </style>

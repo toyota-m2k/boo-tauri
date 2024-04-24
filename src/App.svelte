@@ -7,9 +7,10 @@
   import SidePanel from './lib/SidePanel.svelte'
   import DebugView from "./lib/DebugView.svelte";
   import {logger} from "./lib/model/DebugLog";
-  import {keyEvents} from "./lib/utils/KeyEvents";
   import { fade } from 'svelte/transition'
   import {tauriFullScreen} from "./lib/utils/TauriEx";
+  import {Env} from "./lib/utils/Env";
+  import {globalKeyEvents, keyFor} from "./lib/utils/KeyEvents";
 
   const SidePanelThreshold = 1024
 
@@ -93,21 +94,49 @@
 
   // viewModel.setHost(new HostInfo("Boo", "192.168.0.151", 6001))
   onMount(async ()=> {
+    await Env.init()
     await viewModel.initialize()
-    keyEvents.register("KeyL", {ctrl:true, shift:true}, () => {
-      logger.enabled.set(!logger.enabled.currentValue)
+
+    await globalKeyEvents.beginRegister((registry)=> {
+      registry
+        .register(keyFor("CommandOrControl+Shift+D", {key: "KeyD", asCode: true}, {commandOrControl: true, shift: true}), () => {
+          logger.enabled.set(!logger.enabled.currentValue)
+        })
+        .register([
+          keyFor("F11", {key: "F11", asCode: true}, {}, "W"),
+          keyFor("CommandOrControl+Shift+F", {key: "KeyF", asCode: true}, {commandOrControl: true, shift: true}),],
+          () => {
+            if (!document.fullscreenElement) {
+              // プレーヤーペインをフルスクリーンにする
+              playerElem.requestFullscreen()
+              if (Env.isTauri) {
+                // TauriのWindowを最大化して、Windowのタイトルバーを非表示にする
+                tauriFullScreen(true)
+              }
+            } else {
+              document.exitFullscreen()
+              if (Env.isTauri) {
+                tauriFullScreen(false)
+              }
+            }
+          })
     })
-    keyEvents.register("F11", {}, () => {
-      if(!document.fullscreenElement) {
-        // プレーヤーペインをフルスクリーンにする
-        playerElem.requestFullscreen()
-        // TauriのWindowを最大化して、Windowのタイトルバーを非表示にする
-        tauriFullScreen(true)
-      } else {
-        document.exitFullscreen()
-        tauriFullScreen(false)
-      }
-    })
+    await globalKeyEvents.activate()
+    //
+    // keyEvents.register("KeyL", {ctrl:true, shift:true}, () => {
+    //   logger.enabled.set(!logger.enabled.currentValue)
+    // })
+    // keyEvents.register("F11", {}, () => {
+    //   if(!document.fullscreenElement) {
+    //     // プレーヤーペインをフルスクリーンにする
+    //     playerElem.requestFullscreen()
+    //     // TauriのWindowを最大化して、Windowのタイトルバーを非表示にする
+    //     tauriFullScreen(true)
+    //   } else {
+    //     document.exitFullscreen()
+    //     tauriFullScreen(false)
+    //   }
+    // })
   })
 
 

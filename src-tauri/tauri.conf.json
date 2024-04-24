@@ -31,6 +31,12 @@
         "unminimize": true,
         "setFullscreen": true,
         "startDragging": true
+      },
+      "os": {
+        "all": true
+      },
+      "globalShortcut": {
+        "all": true
       }
     },
     "windows": [

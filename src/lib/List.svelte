@@ -2,8 +2,8 @@
   import {viewModel} from "./model/ViewModel";
   import {Table, TableBody, TableBodyCell, TableBodyRow, TableHeadCell} from "flowbite-svelte";
   import {onMount} from "svelte";
-  import {keyEvents} from "./utils/KeyEvents";
   import {formatSize, formatTime} from './utils/Utils'
+  import {globalKeyEvents, keyFor} from "./utils/KeyEvents";
 
   const mediaList = viewModel.mediaList;
   const currentIndex = viewModel.currentIndex;
@@ -26,9 +26,12 @@
   }
 
   onMount(() => {
-    keyEvents.register("ArrowUp",{}, () => viewModel.prev())
-    keyEvents.register("ArrowDown", {}, () => viewModel.next())
-  });
+    globalKeyEvents.beginRegister((registry) => {
+      registry
+        .register(keyFor("ArrowUp", {key: "ArrowUp", asCode: true}, {}), () => viewModel.prev())
+        .register(keyFor("ArrowDown", {key: "ArrowDown", asCode: true}, {}), () => viewModel.next())
+    })
+  })
 
 </script>
 
