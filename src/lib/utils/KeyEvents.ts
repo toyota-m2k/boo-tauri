@@ -1,15 +1,9 @@
 import {logger} from "../model/DebugLog";
 import {Env} from "./Env";
-import {globalShortcut} from "@tauri-apps/api";
-
-interface IBrowserKey {
-  key: string
-  asCode?: boolean   // true: key は code で指定される / false: key は key
-}
 
 interface IKeyDef {
-  browserKey: IBrowserKey
-  tauriKey: string
+  key: string
+  asCode?: boolean   // true: key は code で指定される / false: key は key
 }
 
 interface IModifierKey {
@@ -21,13 +15,13 @@ interface IModifierKey {
 }
 
 interface IKey {
-  keyDef: IKeyDef
+  mainKey: IKeyDef
   modifierKey: IModifierKey
   os?: "W" | "M" | "L" | "WM" | "WL" | "ML" | "WML"
 }
 
-export function keyFor(tauriKey:string, browserKey: IBrowserKey, modifierKey={}, os?:"W" | "M" | "L" | "WM" | "WL" | "ML" | "WML"): IKey {
-  return { keyDef: { browserKey, tauriKey }, modifierKey, os }
+export function keyFor(mainKey: IKeyDef, modifierKey={}, os?:"W" | "M" | "L" | "WM" | "WL" | "ML" | "WML"): IKey {
+  return { mainKey, modifierKey, os }
 }
 
 
@@ -49,10 +43,10 @@ class KeyEventHandler {
     // ターゲットOSか？
     if (!this.isTargetOS(targetKey)) return false
     // キーが一致するか？
-    if (targetKey.keyDef.browserKey.asCode) {
-      if (e.code !== targetKey.keyDef.browserKey.key) return false
+    if (targetKey.mainKey.asCode) {
+      if (e.code !== targetKey.mainKey.key) return false
     } else {
-      if (e.key !== targetKey.keyDef.browserKey.key) return false
+      if (e.key !== targetKey.mainKey.key) return false
     }
     // 修飾キーが一致するか？
     const modifierKey = targetKey.modifierKey
@@ -84,17 +78,17 @@ class KeyEventHandler {
 // export function keyHandler(targetKey: IKey|IKey[], action:()=>void): KeyEventHandler {
 //   return new KeyEventHandler(targetKey, action)
 // }
-export interface IKeyEventsRegistry {
-  register(targetKey: IKey|IKey[], action:()=>void): IKeyEventsRegistry
-}
+// export interface IKeyEventsRegistry {
+//   register(targetKey: IKey|IKey[], action:()=>void): IKeyEventsRegistry
+// }
 
 export interface IKeyEvents {
-  activate(): Promise<IKeyEvents>
-  deactivate(): Promise<IKeyEvents>
-  beginRegister(fn: (registry: IKeyEventsRegistry)=>void): Promise<void>
+  activate(): IKeyEvents
+  deactivate(): IKeyEvents
+  register(targetKey: IKey|IKey[], action:()=>void): IKeyEvents
 }
 
-class KeyEvents implements IKeyEvents, IKeyEventsRegistry {
+class KeyEvents implements IKeyEvents {
   private handlers: KeyEventHandler[] = []
   private _activated: boolean = false
 
@@ -105,74 +99,45 @@ class KeyEvents implements IKeyEvents, IKeyEventsRegistry {
   //   return this
   // }
 
-  register(targetKey: IKey|IKey[], action:()=>void): KeyEvents {
+  register(targetKey: IKey|IKey[], action:()=>void): IKeyEvents {
     this.handlers.push(new KeyEventHandler(targetKey, action))
     return this
-  }
-
-  async beginRegister(fn: (registry: IKeyEventsRegistry)=>void) : Promise<void> {
-    const org = this.activated
-    if(Env.isTauri) {
-      await this.deactivate()
-    }
-    try {
-      fn(this)
-    } finally {
-      if(org && Env.isTauri) {
-        await this.activate()
-      }
-    }
   }
 
   private internalKeyboardEventHandler = (e:KeyboardEvent) => {
     if(e.defaultPrevented) return
     logger.debug(`${e.code} ${e.key} - shift:${e.shiftKey} ctrl:${e.ctrlKey} alt:${e.altKey} meta:${e.metaKey}`)
-    if(!Env.isTauri) {
-      for(const handler of this.handlers) {
-        if(handler.handle(e)) {
-          e.preventDefault()  // これどうだろう。。。tauriの動きと整合はとれるのか？
-          return
-        }
+    for(const handler of this.handlers) {
+      if(handler.handle(e)) {
+        e.preventDefault()  // これどうだろう。。。tauriの動きと整合はとれるのか？
+        return
       }
     }
   }
 
-  async activate():Promise<IKeyEvents> {
+  activate():IKeyEvents {
     if(this._activated) return this
     this._activated = true
     window.addEventListener("keydown", this.internalKeyboardEventHandler, true)
-    if(Env.isTauri) {
-      for(const handler of this.handlers) {
-        const list = handler.targetKeys.filter((it)=>KeyEventHandler.isTargetOS(it)).map((targetKey) => targetKey.keyDef.tauriKey)
-        if(list.length >1 ) {
-          await globalShortcut.registerAll(list, handler.action)
-        } else if (list.length === 1) {
-          await globalShortcut.register(list[0], handler.action)
-        }
-      }
-    }
     return this
   }
 
-  async deactivate():Promise<IKeyEvents> {
+  deactivate(): IKeyEvents {
     if(!this._activated) return this
     this._activated = false
     window.removeEventListener("keydown", this.internalKeyboardEventHandler, true)
-    if(Env.isTauri) {
-      await globalShortcut.unregisterAll()
-    }
     return this
   }
 }
 
 export const globalKeyEvents : IKeyEvents = new KeyEvents()
 
-export async function switchKeyEventCaster(subEvents: IKeyEvents) : Promise<() => Promise<void>> {
-  await globalKeyEvents.deactivate()
-  await subEvents.activate()
-  return async () => {
-    await subEvents.deactivate()
-    await globalKeyEvents.activate()
+export function switchKeyEventCaster(subEvents: IKeyEvents) : () => void {
+  globalKeyEvents.deactivate()
+  subEvents.activate()
+  return () => {
+    subEvents.deactivate()
+    globalKeyEvents.activate()
   }
 }
 

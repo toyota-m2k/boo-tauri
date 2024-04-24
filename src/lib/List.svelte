@@ -26,11 +26,9 @@
   }
 
   onMount(() => {
-    globalKeyEvents.beginRegister((registry) => {
-      registry
-        .register(keyFor("ArrowUp", {key: "ArrowUp", asCode: true}, {}), () => viewModel.prev())
-        .register(keyFor("ArrowDown", {key: "ArrowDown", asCode: true}, {}), () => viewModel.next())
-    })
+    globalKeyEvents
+    .register(keyFor({key: "ArrowUp", asCode: true}, {}), () => viewModel.prev())
+    .register(keyFor({key: "ArrowDown", asCode: true}, {}), () => viewModel.next())
   })
 
 </script>

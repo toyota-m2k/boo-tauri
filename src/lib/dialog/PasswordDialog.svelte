@@ -19,12 +19,9 @@
   let resumeKeys:()=>void
   onMount(async ()=>{
     const dlgKeyEvents = createKeyEvents()
-    await dlgKeyEvents.beginRegister((registry)=>{
-      registry
-        .register(keyFor("Enter", {key:"Enter", asCode:true}), ()=>complete(true))
-        .register(keyFor("Escape", {key:"Escape", asCode:true}), ()=>complete(false))
-    })
-    resumeKeys = await switchKeyEventCaster(dlgKeyEvents)
+    .register(keyFor({key:"Enter", asCode:true}), ()=>complete(true))
+    .register(keyFor({key:"Escape", asCode:true}), ()=>complete(false))
+    resumeKeys = switchKeyEventCaster(dlgKeyEvents)
     await tick()
     textInput.focus()
   })

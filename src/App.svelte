@@ -97,31 +97,31 @@
     await Env.init()
     await viewModel.initialize()
 
-    await globalKeyEvents.beginRegister((registry)=> {
-      registry
-        .register(keyFor("CommandOrControl+Shift+D", {key: "KeyD", asCode: true}, {commandOrControl: true, shift: true}), () => {
-          logger.enabled.set(!logger.enabled.currentValue)
-        })
-        .register([
-          keyFor("F11", {key: "F11", asCode: true}, {}, "W"),
-          keyFor("CommandOrControl+Shift+F", {key: "KeyF", asCode: true}, {commandOrControl: true, shift: true}),],
-          () => {
-            if (!document.fullscreenElement) {
-              // プレーヤーペインをフルスクリーンにする
-              playerElem.requestFullscreen()
-              if (Env.isTauri) {
-                // TauriのWindowを最大化して、Windowのタイトルバーを非表示にする
-                tauriFullScreen(true)
-              }
-            } else {
-              document.exitFullscreen()
-              if (Env.isTauri) {
-                tauriFullScreen(false)
-              }
-            }
-          })
+    globalKeyEvents
+    .register(
+      keyFor({key: "KeyD", asCode: true}, {commandOrControl: true, shift: true}),
+      () => {
+      logger.enabled.set(!logger.enabled.currentValue)
     })
-    await globalKeyEvents.activate()
+    .register([
+      keyFor({key: "F11", asCode: true}, {}, "W"),
+      keyFor({key: "KeyF", asCode: true}, {commandOrControl: true, shift: true}),],
+      () => {
+        if (!document.fullscreenElement) {
+          // プレーヤーペインをフルスクリーンにする
+          playerElem.requestFullscreen()
+          if (Env.isTauri) {
+            // TauriのWindowを最大化して、Windowのタイトルバーを非表示にする
+            tauriFullScreen(true)
+          }
+        } else {
+          document.exitFullscreen()
+          if (Env.isTauri) {
+            tauriFullScreen(false)
+          }
+        }
+      })
+    .activate()
     //
     // keyEvents.register("KeyL", {ctrl:true, shift:true}, () => {
     //   logger.enabled.set(!logger.enabled.currentValue)
