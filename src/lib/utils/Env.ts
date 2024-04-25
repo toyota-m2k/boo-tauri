@@ -1,12 +1,12 @@
-import {getOS, type OS} from "./TauriEx";
+import {tauriEx, type OSPlatForm} from "./TauriEx";
 
 export class Env {
   static _isTauri: boolean = false;
-  static _os:OS = "U"
+  static _os:OSPlatForm = "U"
 
   static async init() {
     try {
-      this._os = await getOS()
+      this._os = await tauriEx.getOS()
       this._isTauri = this._os[1] !== 'B'
     } catch(e) {
       this._os = "U"
@@ -17,7 +17,7 @@ export class Env {
   static get isTauri(): boolean {
     return this._isTauri
   }
-  static get os(): OS {
+  static get os(): OSPlatForm {
     return this._os
   }
   static get isMac(): boolean {
