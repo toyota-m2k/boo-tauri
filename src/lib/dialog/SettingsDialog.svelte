@@ -4,6 +4,8 @@
   import {settings} from "../model/Settings";
   import {HostInfo} from "../model/HostInfo";
   import type {CompletionProc} from "../model/ViewModel";
+  import {onMount, tick} from "svelte";
+  import {createKeyEvents, keyFor, switchKeyEventCaster} from "../utils/KeyEvents";
 
   export let completion: CompletionProc<boolean>|undefined
   let addingHost = false
@@ -89,6 +91,13 @@
       completion?.(false)
     }
   }
+
+  onMount(()=>{
+    const dlgKeyEvents = createKeyEvents()
+      .register(keyFor({key:"Enter", asCode:true}), ()=>complete(true))
+      .register(keyFor({key:"Escape", asCode:true}), ()=>complete(false))
+      return ()=> { switchKeyEventCaster(dlgKeyEvents) }
+  })
 
 </script>
 

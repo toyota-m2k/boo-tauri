@@ -11,7 +11,7 @@
   const playMode = viewModel.playMode;
 
 
-  const dispatch = createEventDispatcher();
+  const dispatch = createEventDispatcher()
 
   function toggleSidePanel() {
     dispatch('toggleSidePanel');

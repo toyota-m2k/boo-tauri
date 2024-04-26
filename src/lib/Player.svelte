@@ -4,7 +4,11 @@
   import type {IMediaItem} from './protocol/IBooProtocol'
   import {delay, launch} from './utils/Utils'
   import {tick} from 'svelte'
-  import {settings} from './model/Settings'
+  import SlideShowPanel from "./SlideShowPanel.svelte";
+  import {logger} from "./model/DebugLog";
+  import { fade } from 'svelte/transition'
+  import {TimingSwitch} from "./utils/TimingSwitch";
+  import MediaControlPanel from "./MediaControlPanel.svelte";
 
   let player: HTMLVideoElement
   let currentIndex$: Readable<number> = viewModel.currentIndex
@@ -16,31 +20,39 @@
   $: currentMediaItem = viewModel.mediaItemAt($currentIndex$)
   $: currentMediaUrl = currentMediaItem ? viewModel.mediaUrl(currentMediaItem) : undefined
   $: currentMediaType = currentMediaItem?.type
-  $: if(currentMediaItem && currentMediaItem.media==='p' && $playMode$==='sequential') {
-      if(abortController) {
-        abortController.abort()
-        abortController = undefined
-      }
-      launch(async ()=> {
-        abortController = abortController ?? new AbortController()
-        await delay(settings.slideShowInterval * 1000, abortController.signal)
-        viewModel.next()
-      });
-    }
+  // $: if(currentMediaItem && currentMediaItem.media==='p' && $playMode$==='sequential') {
+  //     if(abortController) {
+  //       abortController.abort()
+  //       abortController = undefined
+  //     }
+  //     launch(async ()=> {
+  //       abortController = abortController ?? new AbortController()
+  //       await delay(settings.slideShowInterval * 1000, abortController.signal)
+  //       viewModel.next()
+  //     });
+  //   }
 
-  let duration: number = 0
-  let currentPosition$ = viewModel.currentPosition
-  let paused: boolean = false
-  let ended: boolean = false
+  const duration$ = viewModel.duration
+  const currentPosition$ = viewModel.currentPosition
+  // let paused: boolean = false
+  // let ended: boolean = false
+
+  let showControlPanel = false
+  let controlPanelTimingSwitch = new TimingSwitch(2000, ()=>{
+    showControlPanel = false
+  })
 
   let fitMode = viewModel.fitMode //: "fit"|"fill"|"original" = "fit"
 
   function onEnded() {
+    logger.info("onEnded")
     launch(async () => {
       await tick()
       switch (viewModel.playMode.currentValue) {
         case "sequential":
-          viewModel.next()
+          if( !seekingInfo.seeking) {
+            viewModel.next()
+          }
           break
         case "repeat":
           viewModel.currentPosition.set(0)
@@ -51,6 +63,17 @@
       }
     })
   }
+
+  function onPlay() {
+    logger.info("onPlay")
+    viewModel.playing.set(true)
+  }
+
+  function onPause() {
+    logger.info("onPause")
+    viewModel.playing.set(false)
+  }
+
   function togglePlay() {
     if (!player) {
       return;
@@ -61,6 +84,47 @@
       player.pause();
     }
   }
+
+  function onMouseEnter(e:MouseEvent) {
+    logger.info("onMouseEnter")
+    if(!showControlPanel) {
+      showControlPanel = true
+    }
+  }
+  // function onMouseOver(e:MouseEvent) {
+  //   logger.info("onMouseOver")
+  // }
+  function onMouseLeave(e:MouseEvent) {
+    logger.info("onMouseLeave")
+    if(showControlPanel) {
+      controlPanelTimingSwitch.start()
+    }
+  }
+  // function onMouseOut(e:MouseEvent) {
+  //   logger.info("onMouseOut")
+  // }
+  function onMouseMove(e:MouseEvent) {
+    if(!showControlPanel) {
+      showControlPanel = true
+    }
+  }
+
+  const seekingInfo = { seeking:false, playing:false }
+  function onSeekStart() {
+    seekingInfo.seeking = true
+    seekingInfo.playing = !player.paused
+    player.pause()
+  }
+
+  function onSeekEnd() {
+    seekingInfo.seeking = false
+    if(seekingInfo.playing) {
+      launch(async () => {
+        await player.play()
+      })
+    }
+  }
+
 </script>
 
 
@@ -74,13 +138,12 @@
       bind:this={player}
       src={currentMediaUrl}
       on:click|preventDefault={togglePlay}
-      bind:duration
+      bind:duration={$duration$}
       bind:currentTime={$currentPosition$}
-      bind:paused
-      bind:ended
+      on:play={onPlay}
+      on:pause={onPause}
       on:ended={onEnded}
       autoplay
-      controls
     >
       <track kind="captions" src="">
     </video>
@@ -93,6 +156,18 @@
   {:else}
     <p>No media item selected</p>
   {/if}
+
+  <div class="absolute bottom-0 pb-2 left-0 right-0 flex justify-center bg-red-500 h-14" on:mouseenter={onMouseEnter} on:mousemove={onMouseMove} on:mouseleave={onMouseLeave} role="none">
+    <!--{#if showControlPanel}-->
+      <div transition:fade class="w-full">
+        {#if currentMediaType === "mp4"}
+          <MediaControlPanel on:seekStart={onSeekStart} on:seekEnd={onSeekEnd}/>
+        {:else if currentMediaType === "png" || currentMediaType === "jpg"}
+          <SlideShowPanel />
+        {/if}
+      </div>
+    <!--{/if}-->
+  </div>
 
 </div>
 

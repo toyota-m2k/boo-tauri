@@ -26,8 +26,14 @@ export interface IViewModel {
   isBusy: CurrentValueReadable<boolean>
   chapterList: CurrentValueReadable<IChapterList | undefined>
   currentPosition: CurrentValueStore<number>
+  duration: CurrentValueStore<number>
   fitMode: CurrentValueStore<FitMode>
   playMode: CurrentValueReadable<PlayMode>
+
+  playing: CurrentValueStore<boolean>
+
+  // non-observables
+  currentItem:IMediaItem|undefined
 
   // dialogs
   // settingsDialog: CurrentValueReadable<boolean>
@@ -104,6 +110,10 @@ class ViewModel implements IViewModel {
     return this._currentIndex
   }
 
+  get currentItem():IMediaItem|undefined {
+    return this.mediaItemAt(this._currentIndex.currentValue)
+  }
+
   // - カレントアイテムのURLを取得
   mediaUrl(mediaItem: IMediaItem): string {
     return this.boo.getItemUrl(mediaItem)
@@ -123,6 +133,7 @@ class ViewModel implements IViewModel {
 
   // 再生位置
   currentPosition = currentValueStore<number>(0)
+  duration = currentValueStore<number>(0)
 
   fitMode: CurrentValueStore<FitMode> = currentValueStore<FitMode>("fit")
 
@@ -138,6 +149,8 @@ class ViewModel implements IViewModel {
   videoSelected = currentValueStore<boolean>(true)
   audioSelected = currentValueStore<boolean>(true)
   photoSelected = currentValueStore<boolean>(true)
+
+  playing = currentValueStore(false)
 
   // Dialogs
   // settingsDialog = currentValueStore<boolean>(false)
@@ -158,6 +171,7 @@ class ViewModel implements IViewModel {
     if(index<0) {
       this._currentIndex.set(-1)
       this.currentPosition.set(0)
+      this.duration.set(0)
     }
     this.mediaList.set({list: filteredList, date: this.rawMediaList.date})
     this.setCurrentIndex(index)
@@ -170,6 +184,7 @@ class ViewModel implements IViewModel {
 
     this._currentIndex.set(-1)
     this.currentPosition.set(0)
+    this.duration.set(0)
     this.mediaList.set({list: [], date: 0})
     this.hostInfo.set(undefined)
     this.isBusy.set(true)
@@ -264,7 +279,7 @@ class ViewModel implements IViewModel {
   }
 
   nextChapter(/*isPlaying:boolean*/) {
-    const cl = this.chapterList.currentValue?.items
+    const cl = this.chapterList.currentValue?.chapters
     const pos = this.currentPosition.currentValue * 1000 // ms
     this.goChapter(cl?.find((c, i) => {
       return pos < c.position
@@ -272,7 +287,7 @@ class ViewModel implements IViewModel {
   }
 
   prevChapter(isPlaying: boolean) {
-    const cl = this.chapterList.currentValue?.items
+    const cl = this.chapterList.currentValue?.chapters
     const pos = this.currentPosition.currentValue * 1000 - (isPlaying ? 250 : 0)  // ms
     this.goChapter(cl?.findLast((c, i) => {
       return pos > c.position

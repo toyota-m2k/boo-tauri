@@ -7,7 +7,7 @@ import type {
   IChapterList, IDResponse,
   IHostInfo,
   IListRequest, IMark, IMediaItem,
-  IMediaList, IRatingList, IRequtation, MediaType
+  IMediaList, IRatingList, IReputation, MediaType
 } from './IBooProtocol'
 import {fetchWithTimeout} from "../utils/Utils";
 import {logger} from "../model/DebugLog";
@@ -120,7 +120,7 @@ class BooProtocolImpl implements IBooProtocol {
       try {
         if (this.authToken) {
           const ret = await fn(this.authToken.token)
-          logger.debug(`result = ${JSON.stringify(ret)}`)
+          logger.debug(`boo auth result = ${JSON.stringify(ret)}`)
           return ret
         } else {
           throw new BooError('auth', 'auth token is not set.')
@@ -238,15 +238,15 @@ class BooProtocolImpl implements IBooProtocol {
     })
   }
 
-  async getReputation(mediaId: string): Promise<IRequtation> {
+  async getReputation(mediaId: string): Promise<IReputation> {
     if (!this.capabilities?.reputation) {
       return {id: mediaId}
     }
     const url = this.baseUri + `reputation?id=${mediaId}`
-    return await this.handleResponse<IRequtation>(await fetch(url))
+    return await this.handleResponse<IReputation>(await fetch(url))
   }
 
-  async setReputation(req: IRequtation): Promise<void> {
+  async setReputation(req: IReputation): Promise<void> {
     if (this.capabilities?.reputation !== 2) {
       return
     }

@@ -51,6 +51,8 @@ export interface IMediaItem {
   media: string,      // "v" | "a" | "p"
   size: number,
   volume: number | undefined,
+  start: number | undefined,
+  end: number | undefined,
   duration: number | undefined,
 }
 
@@ -66,11 +68,11 @@ export interface IChapter {
 }
 
 export interface IChapterList {
-  items: IChapter[],
+  chapters: IChapter[]|undefined,
   id: string,                 // media id
 }
 
-export interface IRequtation {
+export interface IReputation {
   id: string,
   rating?: number | undefined,
   mark?: number | undefined,
@@ -118,9 +120,9 @@ export interface IBooProtocol {
   getCurrent(): Promise<string> // return current media id
   setCurrent(mediaId: string): Promise<void>
 
-  getReputation(mediaId: string): Promise<IRequtation>
+  getReputation(mediaId: string): Promise<IReputation>
 
-  setReputation(req: IRequtation): Promise<void>
+  setReputation(req: IReputation): Promise<void>
 
   categories(): Promise<ICategory[]>
 
