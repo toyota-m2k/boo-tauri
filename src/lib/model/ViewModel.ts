@@ -59,7 +59,7 @@ export interface IViewModel {
   prev: () => boolean
   hasPrev: () => boolean
   nextChapter: () => void
-  prevChapter: (isPlaying: boolean) => void
+  prevChapter: () => void
 
   nextPlayMode(): void
 
@@ -286,9 +286,9 @@ class ViewModel implements IViewModel {
     }))
   }
 
-  prevChapter(isPlaying: boolean) {
+  prevChapter() {
     const cl = this.chapterList.currentValue?.chapters
-    const pos = this.currentPosition.currentValue * 1000 - (isPlaying ? 250 : 0)  // ms
+    const pos = this.currentPosition.currentValue * 1000 - (this.playing.currentValue ? 250 : 0)  // ms
     this.goChapter(cl?.findLast((c, i) => {
       return pos > c.position
     }))

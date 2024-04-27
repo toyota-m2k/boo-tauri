@@ -10,16 +10,31 @@ const config = {
     colors: {
       // flowbite-svelte
       primary: {
-        50: '#E0F2F1',
-        100: '#B2DFDB',
-        200: '#80CBC4',
-        300: '#4DB6AC',
-        400: '#26A69A',
-        500: '#009688',
-        600: '#00897B',
-        700: '#00796B',
-        800: '#00695C',
-        900: '#004D40'
+        ...require('tailwindcss/colors').lime,
+        DEFAULT: require('tailwindcss/colors').lime[300],
+        on: require('tailwindcss/colors').slate[800],
+        variant: {
+          DEFAULT: require('tailwindcss/colors').lime[600],
+          on: require('tailwindcss/colors').slate[50],
+        },
+      },
+      secondary: {
+        ...require('tailwindcss/colors').fuchsia,
+        DEFAULT: require('tailwindcss/colors').fuchsia[800],
+        on: require('tailwindcss/colors').slate[50],
+        variant: {
+          DEFAULT: require('tailwindcss/colors').fuchsia[300],
+          on: require('tailwindcss/colors').slate[800]
+        },
+      },
+      tertiary: {
+        ...require('tailwindcss/colors').amber,
+        DEFAULT: require('tailwindcss/colors').amber[500],
+        on: require('tailwindcss/colors').slate[50],
+        variant: {
+          DEFAULT: require('tailwindcss/colors').amber[200],
+          on: require('tailwindcss/colors').slate[800]
+        },
       },
     },
   },

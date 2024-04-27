@@ -20,6 +20,7 @@
   $: currentMediaItem = viewModel.mediaItemAt($currentIndex$)
   $: currentMediaUrl = currentMediaItem ? viewModel.mediaUrl(currentMediaItem) : undefined
   $: currentMediaType = currentMediaItem?.type
+  $: playing$ = viewModel.playing
   // $: if(currentMediaItem && currentMediaItem.media==='p' && $playMode$==='sequential') {
   //     if(abortController) {
   //       abortController.abort()
@@ -87,22 +88,23 @@
 
   function onMouseEnter(e:MouseEvent) {
     logger.info("onMouseEnter")
-    if(!showControlPanel) {
+    controlPanelTimingSwitch.cancel()
+      if(!showControlPanel) {
       showControlPanel = true
     }
   }
-  // function onMouseOver(e:MouseEvent) {
-  //   logger.info("onMouseOver")
-  // }
+  function onMouseOver(e:MouseEvent) {
+    logger.info("onMouseOver")
+  }
   function onMouseLeave(e:MouseEvent) {
-    logger.info("onMouseLeave")
+    logger.info(`onMouseLeave y=${e.y} offsetY  =${e.offsetY}`)
     if(showControlPanel) {
       controlPanelTimingSwitch.start()
     }
   }
-  // function onMouseOut(e:MouseEvent) {
-  //   logger.info("onMouseOut")
-  // }
+  function onMouseOut(e:MouseEvent) {
+    logger.info("onMouseOut")
+  }
   function onMouseMove(e:MouseEvent) {
     if(!showControlPanel) {
       showControlPanel = true
@@ -128,7 +130,7 @@
 </script>
 
 
-<div class="player-container">
+<div class="player-container bg-slate">
   {#if currentMediaType === "mp4"}
     <video
       class="media-view"
@@ -157,17 +159,24 @@
     <p>No media item selected</p>
   {/if}
 
-  <div class="absolute bottom-0 pb-2 left-0 right-0 flex justify-center bg-red-500 h-14" on:mouseenter={onMouseEnter} on:mousemove={onMouseMove} on:mouseleave={onMouseLeave} role="none">
-    <!--{#if showControlPanel}-->
-      <div transition:fade class="w-full">
-        {#if currentMediaType === "mp4"}
-          <MediaControlPanel on:seekStart={onSeekStart} on:seekEnd={onSeekEnd}/>
-        {:else if currentMediaType === "png" || currentMediaType === "jpg"}
-          <SlideShowPanel />
-        {/if}
-      </div>
-    <!--{/if}-->
+  <div class="absolute bottom-0 pb-2 left-0 right-0 flex justify-center h-[95px]" on:mouseenter={onMouseEnter} on:mousemove={onMouseMove} on:mouseleave={onMouseLeave} role="none">
+
+  {#if showControlPanel}
+  <div class="absolute w-full bottom-0 div-gradient" transition:fade>
+    {#if currentMediaType === "mp4"}
+      <MediaControlPanel
+        on:seekStart={onSeekStart}
+        on:seekEnd={onSeekEnd}
+        on:toggle={togglePlay}
+      />
+    {:else if currentMediaType === "png" || currentMediaType === "jpg"}
+      <SlideShowPanel />
+    {/if}
   </div>
+  {/if}
+
+  </div>
+
 
 </div>
 
@@ -204,5 +213,9 @@
     height: auto;
     margin: auto; /* これによりビデオがコンテナの中央に配置されます */
     object-fit: cover; /* ビデオがコンテナの幅または高さに合わせて調整されます */
+  }
+
+  .div-gradient {
+    background: linear-gradient(to bottom, rgba(0,0,0,0) 0%, rgba(0,0,0,0.2) 10%, rgba(0,0,0,0.7) 40%);
   }
 </style>

@@ -4,7 +4,15 @@
   import {viewModel} from "./model/ViewModel";
   import {Button, GradientButton} from "flowbite-svelte";
   // import {CogOutline} from "flowbite-svelte-icons";
-  import {ICON_COG,ICON_REPEAT,ICON_SINGLE,ICON_SEQUENTIAL} from './Icons.js'
+  import {
+    ICON_COG,
+    ICON_REPEAT,
+    ICON_SINGLE,
+    ICON_SEQUENTIAL,
+    ICON_MENU,
+    ICON_MODE_FIT,
+    ICON_MODE_FILL, ICON_MODE_ORIGINAL
+  } from './Icons.js'
   import SvgIcon from './common/SvgIcon.svelte'
 
   export let title: string;
@@ -47,15 +55,25 @@
 </script>
 
 
-<div bind:this={headerElem} class="header bg-teal-800 text-gray-50">
+<div bind:this={headerElem} class="header bg-primary text-primary-on">
   <div class="left-header">
-    <button class="menu-button" on:click={toggleSidePanel}>☰</button>
+    <button class="menu-button text-primary-on" on:click={toggleSidePanel}>
+      <SvgIcon class="h-6 w-6" path={ICON_MENU}/>
+    </button>
     <div class="appName">BooTauri</div>
   </div>
   <Viewbox text="{title}" class="flex-grow"/>
   <nav>
-    <GradientButton size="sm" class="h-7" on:click={nextFitMode}>{$fitMode}</GradientButton>
-    <GradientButton size="xs" class="h-7" on:click={()=>viewModel.nextPlayMode()}>
+    <Button class="rounded h-7" size="xs" on:click={nextFitMode}>
+      {#if $fitMode === 'original'}
+        <SvgIcon class="h-4 w-4" path={ICON_MODE_ORIGINAL}/>
+      {:else if $fitMode === 'fit'}
+        <SvgIcon class="h-4 w-4" path={ICON_MODE_FIT}/>
+      {:else}
+        <SvgIcon class="h-4 w-4" path={ICON_MODE_FILL}/>
+      {/if}
+    </Button>
+    <Button size="xs" class="rounded h-7" on:click={()=>viewModel.nextPlayMode()}>
       {#if $playMode === 'single'}
         <SvgIcon class="h-4 w-4" path={ICON_SINGLE}/>
       {:else if $playMode === 'sequential'}
@@ -63,10 +81,10 @@
       {:else}
         <SvgIcon class="h-4 w-4" path={ICON_REPEAT}/>
       {/if}
-    </GradientButton>
-    <GradientButton size="xs" class="h-7" on:click={showSettingsDialog}>
+    </Button>
+    <Button size="xs" class="rounded h-7" on:click={showSettingsDialog}>
       <SvgIcon class="h-4 w-4" path={ICON_COG}/>
-    </GradientButton>
+    </Button>
     <!-- 他のナビゲーション要素 -->
   </nav>
 </div>
@@ -94,7 +112,6 @@
   .menu-button {
     background: none;
     border: none;
-    color: white;
     font-size: 24px;
     cursor: pointer;
     padding: 10px;

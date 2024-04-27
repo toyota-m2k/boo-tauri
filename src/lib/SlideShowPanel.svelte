@@ -6,7 +6,7 @@ import SvgIcon from "./common/SvgIcon.svelte";
 import {viewModel} from "./model/ViewModel";
 import {toggleSlideShow} from "./model/SlideShowModel";
 
-const playing = viewModel.playing
+const playing$ = viewModel.playing
 
 function prev() {
   viewModel.prev()
@@ -20,18 +20,18 @@ function toggle() {
 
 </script>
 
-<div>
-  <Button on:click={prev}>
-    <SvgIcon class="h-4 w-4" path={ICON_PREV}/>
+<div class="flex justify-center gap-2 pb-2">
+  <Button outline={true} class="p-0 rounded-none" size="xs" on:click={prev}>
+    <SvgIcon class="h-7 w-7" path={ICON_PREV}/>
   </Button>
-  <Button on:click={toggle}>
-    {#if $playing}
-      <SvgIcon class="h-4 w-4" path={ICON_STOP}/>
+  <Button outline={true} class="p-0 rounded-none" size="xs" on:click={toggle}>
+    {#if $playing$}
+      <SvgIcon class="h-7 w-7" path={ICON_STOP}/>
     {:else}
-      <SvgIcon class="h-4 w-4" path={ICON_PLAY}/>
+      <SvgIcon class="h-7 w-7" path={ICON_PLAY}/>
     {/if}
   </Button>
-  <Button on:click={next}>
-    <SvgIcon class="h-4 w-4" path={ICON_NEXT}/>
+  <Button outline={true} class="p-0 rounded-none" size="xs" on:click={next}>
+    <SvgIcon class="h-7 w-7" path={ICON_NEXT}/>
   </Button>
 </div>
