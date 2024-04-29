@@ -79,3 +79,35 @@ export function fetchWithTimeout(url:RequestInfo | URL, init?:RequestInitWithTim
   }
   return fetch(url, init)
 }
+
+export function globalToLocalPoint(element: HTMLElement, x: number, y: number): {x: number, y: number} {
+  const rect = element.getBoundingClientRect()
+  return {x: x - rect.left, y: y - rect.top}
+}
+
+export function globalToLocalPointAsPercentage(element: HTMLElement, x: number, y: number): {x: number, y: number} {
+  const rect = element.getBoundingClientRect()
+  return {x: (x - rect.left)*100/rect.width, y: (y - rect.top)*100/rect.height}
+}
+
+export function localToGlobalPoint(element: HTMLElement, x: number, y: number): {x: number, y: number} {
+  const rect = element.getBoundingClientRect()
+  return {x: x + rect.left, y: y + rect.top}
+}
+
+export function getLocalPoint(event: MouseEvent): {x: number, y: number} {
+  return globalToLocalPoint(elementFromMouseEvent(event), event.clientX, event.clientY)
+}
+
+export function getLocalPointAsPercentage(event: MouseEvent): {x: number, y: number} {
+  return globalToLocalPointAsPercentage(elementFromMouseEvent(event), event.clientX, event.clientY)
+}
+
+
+export function elementFromMouseEvent(event: MouseEvent): HTMLElement {
+  if (!event.target || !(event.target instanceof (HTMLElement))) {
+    return document.elementFromPoint(event.clientX, event.clientY) as HTMLElement
+  } else {
+    return event.target
+  }
+}

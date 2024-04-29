@@ -31,6 +31,7 @@ export interface IViewModel {
   playMode: CurrentValueReadable<PlayMode>
 
   playing: CurrentValueStore<boolean>
+  mediaScale: CurrentValueReadable<number>
 
   // non-observables
   currentItem:IMediaItem|undefined
@@ -67,6 +68,8 @@ export interface IViewModel {
 
   showPasswordDialog: () => Promise<string|undefined>
   // closePasswordDialog: (password:string | undefined) => void
+
+  zoom(v: number): void
 }
 
 export type FitMode = "fit" | "fill" | "original"
@@ -241,6 +244,7 @@ class ViewModel implements IViewModel {
       launch(async () => {
         await this.boo.noop()
         this.chapterList.set(undefined)
+        this.mediaScale.set(1)
         this._currentIndex.set(index)
         const cl = await this.boo.chapters(mediaList.list[index].id)
         if (index == this.currentIndex.currentValue) {   // check if the index is still the same
@@ -351,6 +355,18 @@ class ViewModel implements IViewModel {
   //     this.passwordResolver(password)
   //   }
   // }
+
+  mediaScale = currentValueStore<number>(1)
+  zoom(v: number): void {
+    this.mediaScale.update(it=>{
+      it+=v/10
+      if(it<1) it = 1
+      if(it>5) it = 5
+      return it
+    })
+  }
+
+
 }
 
 export type CompletionProc<T> = (value: T) => void

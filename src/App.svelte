@@ -35,7 +35,7 @@
 
   // let mainContent: HTMLElement
   // let sidePanel: HTMLElement
-  const debugLog = logger.enabled
+  const debugLogEnabled$ = logger.enabled
 
   let titleBarHeight = 50
   let titleBarShown = true
@@ -126,7 +126,7 @@
     updateBodyPadding()
   }
 
-  // viewModel.setHost(new HostInfo("Boo", "192.168.0.151", 6001))
+    // viewModel.setHost(new HostInfo("Boo", "192.168.0.151", 6001))
   onMount(async ()=> {
     await Env.init()
     await viewModel.initialize()
@@ -135,7 +135,7 @@
     .register(
       keyFor({key: "KeyD", asCode: true}, {commandOrControl: true, shift: true}),
       () => {
-      logger.enabled.set(!logger.enabled.currentValue)
+      logger.enabled.update(it=>!it)
     })
     .register([
       keyFor({key: "F11", asCode: true}, {}, "W"),
@@ -186,7 +186,7 @@
     </div>
   {/if}
 
-  {#if $debugLog}
+  {#if $debugLogEnabled$}
     <DebugView/>
   {/if}
 </main>

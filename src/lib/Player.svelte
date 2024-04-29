@@ -2,14 +2,16 @@
   import {viewModel} from "./model/ViewModel";
   import type {Readable} from "svelte/store";
   import type {IMediaItem} from './protocol/IBooProtocol'
-  import {delay, launch} from './utils/Utils'
+  import {delay, getLocalPoint, getLocalPointAsPercentage, launch} from './utils/Utils'
   import {tick} from 'svelte'
   import SlideShowPanel from "./SlideShowPanel.svelte";
   import {logger} from "./model/DebugLog";
-  import { fade } from 'svelte/transition'
+  import {fade, scale} from 'svelte/transition'
   import {TimingSwitch} from "./utils/TimingSwitch";
   import MediaControlPanel from "./MediaControlPanel.svelte";
+  import ZoomView from "./ZoomView.svelte";
 
+  let imageViewer: HTMLImageElement
   let player: HTMLVideoElement
   let currentIndex$: Readable<number> = viewModel.currentIndex
   let playMode$: Readable<string> = viewModel.playMode
@@ -86,26 +88,26 @@
     }
   }
 
-  function onMouseEnter(e:MouseEvent) {
+  function onMouseEnterToPanel(e:MouseEvent) {
     logger.info("onMouseEnter")
     controlPanelTimingSwitch.cancel()
       if(!showControlPanel) {
       showControlPanel = true
     }
   }
-  function onMouseOver(e:MouseEvent) {
-    logger.info("onMouseOver")
-  }
-  function onMouseLeave(e:MouseEvent) {
+  // function onMouseOver(e:MouseEvent) {
+  //   logger.info("onMouseOver")
+  // }
+  function onMouseLeaveFromPanel(e:MouseEvent) {
     logger.info(`onMouseLeave y=${e.y} offsetY  =${e.offsetY}`)
     if(showControlPanel) {
       controlPanelTimingSwitch.start()
     }
   }
-  function onMouseOut(e:MouseEvent) {
-    logger.info("onMouseOut")
-  }
-  function onMouseMove(e:MouseEvent) {
+  // function onMouseOut(e:MouseEvent) {
+  //   logger.info("onMouseOut")
+  // }
+  function onMouseMoveOnPanel(e:MouseEvent) {
     if(!showControlPanel) {
       showControlPanel = true
     }
@@ -127,10 +129,12 @@
     }
   }
 
+
 </script>
 
 
 <div class="player-container bg-background">
+  <ZoomView>
   {#if currentMediaType === "mp4"}
     <video
       class="media-view"
@@ -139,7 +143,7 @@
       class:original={$fitMode==="original"}
       bind:this={player}
       src={currentMediaUrl}
-      on:click|preventDefault={togglePlay}
+      on:dblclick={togglePlay}
       bind:duration={$duration$}
       bind:currentTime={$currentPosition$}
       on:play={onPlay}
@@ -150,7 +154,10 @@
       <track kind="captions" src="">
     </video>
   {:else if currentMediaType === "png" || currentMediaType === "jpg"}
-    <img src="{currentMediaUrl}" class="media-view" alt="">
+    <img src="{currentMediaUrl}" class="media-view" alt=""
+         draggable="false"
+         bind:this={imageViewer}
+         >
   {:else if currentMediaType === "mp3"}
     <p>audio type is not supported yet.</p>
   {:else if currentMediaType}
@@ -158,8 +165,9 @@
   {:else}
     <p>No media item selected</p>
   {/if}
+  </ZoomView>
 
-  <div class="absolute bottom-0 pb-2 left-0 right-0 flex justify-center h-[95px]" on:mouseenter={onMouseEnter} on:mousemove={onMouseMove} on:mouseleave={onMouseLeave} role="none">
+  <div class="absolute bottom-0 pb-2 left-0 right-0 flex justify-center h-[95px]" on:mouseenter={onMouseEnterToPanel} on:mousemove={onMouseMoveOnPanel} on:mouseleave={onMouseLeaveFromPanel} role="none">
 
   {#if showControlPanel}
   <div class="absolute w-full bottom-0 div-gradient" transition:fade>
