@@ -1,6 +1,6 @@
 <script lang="ts">
   import {viewModel} from "./model/ViewModel";
-  import {Table, TableBody, TableBodyCell, TableBodyRow, TableHeadCell} from "flowbite-svelte";
+  import {Table, TableBody, TableBodyCell, TableBodyRow} from "flowbite-svelte";
   import {onMount} from "svelte";
   import {formatSize, formatTime} from './utils/Utils'
   import {globalKeyEvents, keyFor} from "./utils/KeyEvents";
@@ -33,15 +33,15 @@
 
 </script>
 
-<div>
+<div class="bg-background">
   {#if $mediaList.list.length !== 0}
     <Table hoverable={true}>
       <TableBody bind:this={tableBody}>
       {#each $mediaList.list as item, i (item.id)}
         <TableBodyRow id={item.id}>
-          <TableBodyCell on:click={ (e)=>onSelect(e,i) } tdClass="cursor-pointer whitespace-nowrap font-medium text-xs">
-            <div class:bg-indigo-500={currentId===item.id} class="px-1 py-0.5">
-              <div class:text-white={currentId===item.id}>{item.name}</div>
+          <TableBodyCell on:click={ (e)=>onSelect(e,i) } tdClass="cursor-pointer whitespace-nowrap font-medium text-xs common_surface">
+            <div class="px-1 py-0.5" class:selected={currentId===item.id}>
+              <div  >{item.name}</div>
               <div class:text-gray-300={currentId===item.id} class:text-gray-500={currentId!==item.id}>{item.duration!==undefined ? formatTime(item.duration) : formatSize(item.size) }</div>
             </div>
           </TableBodyCell>

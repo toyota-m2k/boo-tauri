@@ -60,11 +60,10 @@
     <button class="menu-button text-primary-on" on:click={toggleSidePanel}>
       <SvgIcon class="h-6 w-6" path={ICON_MENU}/>
     </button>
-    <div class="appName">BooTauri</div>
   </div>
-  <Viewbox text="{title}" class="flex-grow"/>
+  <Viewbox text="{title}" class="flex-grow mr-2"/>
   <nav>
-    <Button class="rounded h-7" size="xs" on:click={nextFitMode}>
+    <Button class="rounded h-7 bg-secondary" size="xs" on:click={nextFitMode}>
       {#if $fitMode === 'original'}
         <SvgIcon class="h-4 w-4" path={ICON_MODE_ORIGINAL}/>
       {:else if $fitMode === 'fit'}
@@ -73,7 +72,7 @@
         <SvgIcon class="h-4 w-4" path={ICON_MODE_FILL}/>
       {/if}
     </Button>
-    <Button size="xs" class="rounded h-7" on:click={()=>viewModel.nextPlayMode()}>
+    <Button size="xs" class="rounded h-7 bg-secondary" on:click={()=>viewModel.nextPlayMode()}>
       {#if $playMode === 'single'}
         <SvgIcon class="h-4 w-4" path={ICON_SINGLE}/>
       {:else if $playMode === 'sequential'}
@@ -82,7 +81,7 @@
         <SvgIcon class="h-4 w-4" path={ICON_REPEAT}/>
       {/if}
     </Button>
-    <Button size="xs" class="rounded h-7" on:click={showSettingsDialog}>
+    <Button size="xs" class="rounded h-7 bg-secondary" on:click={showSettingsDialog}>
       <SvgIcon class="h-4 w-4" path={ICON_COG}/>
     </Button>
     <!-- 他のナビゲーション要素 -->

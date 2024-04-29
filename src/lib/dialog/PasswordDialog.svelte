@@ -32,7 +32,7 @@
 </script>
 
 <Modal title="{title}" open={true} dismissable={false}>
-  <div class="mb-6">
+  <div class="mb-6 default_surface">
     <Label class="mb-2">Password</Label>
 <!--    <Input bind:this={textInput} type="password" placeholder="•••••••••" required bind:value={password}/>-->
     <Input let:props>
@@ -40,7 +40,7 @@
     </Input>
   </div>
   <svelte:fragment slot="footer">
-    <Button on:click={()=>complete(true)}>OK</Button>
-    <Button color="alternative" on:click={()=>complete(false)}>Cancel</Button>
+    <Button class="default_button" on:click={()=>complete(true)}>OK</Button>
+    <Button class="other_button" on:click={()=>complete(false)}>Cancel</Button>
   </svelte:fragment>
 </Modal>

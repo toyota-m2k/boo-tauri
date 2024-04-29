@@ -130,7 +130,7 @@
 </script>
 
 
-<div class="player-container bg-slate">
+<div class="player-container bg-background">
   {#if currentMediaType === "mp4"}
     <video
       class="media-view"

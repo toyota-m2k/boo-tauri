@@ -15,7 +15,7 @@
   const SidePanelThreshold = 1024
 
   const currentIndex$ = viewModel.currentIndex;
-  $: title = viewModel.mediaItemAt($currentIndex$)?.name ?? "No Media"
+  $: title = viewModel.mediaItemAt($currentIndex$)?.name ?? "BooTauri"
   const loading$ = viewModel.isBusy;
   $: if(!$loading$) {
     launch(async () => {
@@ -164,12 +164,13 @@
 </script>
 
 <svelte:window on:resize={onWindowSizeChanged}/>
+<div class="dark"> <!-- <-- theme クラスを設定する -->
 <div bind:this={headerElem} class="title-bar" style:height={`${titleBarHeight}px`} style:top={titleBarShown ? "0px" : `-${titleBarHeight}px`}>
   <TitleBar title={title} on:toggleSidePanel={()=> sidePanelShown=!sidePanelShown}/>
 </div>
 
 <main bind:this={container} class="my-container" style:top={titleBarShown ? `${titleBarHeight}px` : "0px"}>
-  <div class="side-panel" style:width="{sidePanelWidth}px" style:left={sidePanelShown ? "0px" : `-${sidePanelWidth}px`}>
+  <div class="side-panel bg-background" style:width="{sidePanelWidth}px" style:left={sidePanelShown ? "0px" : `-${sidePanelWidth}px`}>
     <SidePanel/>
   </div>
 
@@ -192,6 +193,7 @@
 
 <!-- ダイアログ -->
 <div id="dialogContainer"/>
+</div>
 
 <!--<PasswordDialog/>-->
 <!--<SettingsDialog/>-->
@@ -226,7 +228,6 @@
     bottom: 0;
     left: 0;
     transition: left 0.3s;
-    background-color: #f0f0f0;
     overflow-y: auto; /* 縦方向のスクロールバーを有効にする */
     z-index: 10; /* Playerより上に表示：これを入れておかないと、on:click を Playerが先にハンドルしてしまう */
   }
@@ -235,7 +236,6 @@
     position: absolute;
     top: 0;
     bottom: 0;
-    background-color: #f8f8f8;
     left: 0;
     right: 0;
   }

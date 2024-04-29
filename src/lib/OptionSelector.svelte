@@ -1,7 +1,7 @@
 <script lang="ts">
 
   import {viewModel} from './model/ViewModel'
-  import {Button, ButtonGroup, GradientButton, Label} from 'flowbite-svelte'
+  import {Button, ButtonGroup, Label} from 'flowbite-svelte'
   import SvgIcon from './common/SvgIcon.svelte'
   import {ICON_AUDIO, ICON_PHOTO, ICON_VIDEO} from './Icons'
   import {createEventDispatcher, tick} from 'svelte'
@@ -46,7 +46,7 @@
 
 </script>
 
-<div class="flex flex-col justify-center items-center py-2 gap-1">
+<div class="flex flex-col justify-center items-center py-2 gap-1 bg-background">
   {#if $typeSelectable}
     <ButtonGroup>
       {#if $videoSupported}

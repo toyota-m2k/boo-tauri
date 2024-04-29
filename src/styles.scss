@@ -4,15 +4,14 @@
   line-height: 24px;
   font-weight: 400;
 
-  color: #0f0f0f;
-  background-color: #f6f6f6;
+  //color: #0f0f0f;
+  //background-color: #f6f6f6;
 
   font-synthesis: none;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   -webkit-text-size-adjust: 100%;
-
 
   --color-red-50: #FFEBEE;
   --color-red-100: #FFCDD2;
@@ -290,14 +289,58 @@
   --color-blue-gray-800: #37474F;
   --color-blue-gray-900: #263238;
 
-  --color-black: #FF000000;
-  --color-white: #FFFFFFFF;
+  --color-black: #000000;
+  --color-white: #FFFFFF;
 
+  // デフォルトテーマ
+  --color-primary: var(--color-purple-700);
+  --color-primary-on: var(--color-white);
+  --color-primary-variant: var(--color-purple-200);
+  --color-primary-variant-on: var(--color-black);
+
+  --color-secondary: var(--color-indigo-a200);
+  --color-secondary-on: var(--color-white);
+  --color-secondary-variant: var(--color-indigo-200);
+  --color-secondary-variant-on: var(--color-black);
+
+  --color-accent: var(--color-lime-a700);
+  --color-accent-on: var(--color-black);
+
+  --color-background: var(--color-blue-gray-50);
+  --color-background-on: var(--color-gray-800);
+
+  --color-surface: var(--color-white);
+  --color-surface-on: var(--color-gray-800);
+
+  --color-error: var(--color-red-800);
+  --color-error-on: var(--color-white);
+
+  .dark {
+    --color-background: var(--color-blue-gray-800);
+    --color-background-on: var(--color-white);
+
+    --color-surface: var(--color-black);
+    --color-surface-on: var(--color-white);
+  }
+
+  .default_button {
+    @apply text-primary-on bg-primary hover:bg-primary-variant hover:text-primary-variant-on;
+  }
+  .other_button {
+    @apply text-surface-on bg-surface hover:bg-background hover:text-background-on border border-gray-400;
+  }
+  .control_button {
+    @apply bg-transparent text-gray-400 hover:bg-background hover:text-background-on border border-gray-400;
+  }
+  .common_surface {
+    @apply bg-surface text-surface-on;
+    .selected {
+      @apply bg-secondary text-secondary-on;
+    }
+  }
 }
 
 @media (prefers-color-scheme: dark) {
   :root {
-    color: #f6f6f6;
-    background-color: #2f2f2f;
   }
 }

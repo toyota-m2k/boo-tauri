@@ -4,7 +4,7 @@
   import {settings} from "../model/Settings";
   import {HostInfo} from "../model/HostInfo";
   import type {CompletionProc} from "../model/ViewModel";
-  import {onMount, tick} from "svelte";
+  import {onMount} from "svelte";
   import {createKeyEvents, keyFor, switchKeyEventCaster} from "../utils/KeyEvents";
 
   export let completion: CompletionProc<boolean>|undefined
@@ -102,27 +102,27 @@
 </script>
 
 <Modal title="Settings" open={true} dismissable={false}>
-  <div class="mb-1">
+  <div class="default_surface mb-1">
     {#if !addingHost && !editingHost}
       <div class="flex flex-row items-center">
         <Label class="mr-2">Hosts</Label>
-        <Button color="primary" size="xs" class="p-1" on:click={()=>addingHost=true}>
-          <PlusOutline class="w-5 h-5 text-white" />
+        <Button size="xs" class="p-1 default_button" on:click={()=>addingHost=true}>
+          <PlusOutline class="w-5 h-5 text-primary-on" />
         </Button>
       </div>
       <div class="flex flex-col mt-2">
         {#each hostList as host}
           <div class="flex flex-row items-center justify-between p-2 border-b border-gray-200">
             <div class="flex flex-row">
-              <Checkbox checked={currentHost && isSameHost(host,currentHost)} on:click={()=>currentHost=host} class="mr-2" />
+              <Checkbox checked={currentHost && isSameHost(host,currentHost)} on:click={()=>currentHost=host} class="mr-2 text-accent focus:ring-secondary" />
               <div class="flex flex-col">
                 <div class="text-sm">{host.displayName}</div>
                 <div class="text-xs text-gray-500">{host.host}:{host.port}</div>
               </div>
             </div>
             <div class="flex flex-row">
-              <Button size="xs" color="alternative" class="p-1" on:click={()=>deleteHost(host)}>
-                <TrashBinSolid class="w-4 h-4 text-red-500" />
+              <Button size="xs" class="p-1 other_button" on:click={()=>deleteHost(host)}>
+                <TrashBinSolid class="w-4 h-4 text-error" />
               </Button>
             </div>
           </div>
@@ -146,18 +146,27 @@
       <NumberInput bind:value={newHostPort} placeholder="IP Address" class="mb-2" />
 
       <div class="flex flex-row items-center justify-center mt-4">
-        <Button color="primary" size="xs" class="mr-4 w-20" on:click={()=>addHost()}>{editingHost?"Apply":"Add"}</Button>
-        <Button color="alternative" size="xs" class="w-20" on:click={endAddingHost}>Cancel</Button>
+        <Button size="xs" class="default_button mr-4 w-20" on:click={()=>addHost()}>{editingHost?"Apply":"Add"}</Button>
+        <Button size="xs" class="other_button w-20" on:click={endAddingHost}>Cancel</Button>
       </div>
     {/if}
   </div>
   <svelte:fragment slot="footer">
     {#if !addingHost && !editingHost}
       <div class="flex flex-row items-center justify-center w-full">
-        <Button on:click={()=>complete(true)} class="mr-4">OK</Button>
-        <Button color="alternative" on:click={()=>complete(false)}>Cancel</Button>
+        <Button on:click={()=>complete(true)} class="default_button mr-4 w-20">OK</Button>
+        <Button on:click={()=>complete(false)} class="other_button w-20">Cancel</Button>
       </div>
     {/if}
   </svelte:fragment>
 
 </Modal>
+
+<style lang="scss">
+  //.positive {
+  //  @apply bg-primary text-primary-on;
+  //}
+  //.negative {
+  //  @apply (bg-surface text-surface-on);
+  //}
+</style>

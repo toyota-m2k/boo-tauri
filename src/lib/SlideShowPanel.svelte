@@ -21,17 +21,17 @@ function toggle() {
 </script>
 
 <div class="flex justify-center gap-2 pb-2">
-  <Button outline={true} class="p-0 rounded-none" size="xs" on:click={prev}>
+  <Button class="p-0 control_button rounded-none" size="xs" on:click={prev}>
     <SvgIcon class="h-7 w-7" path={ICON_PREV}/>
   </Button>
-  <Button outline={true} class="p-0 rounded-none" size="xs" on:click={toggle}>
+  <Button class="p-0 control_button rounded-none" size="xs" on:click={toggle}>
     {#if $playing$}
       <SvgIcon class="h-7 w-7" path={ICON_STOP}/>
     {:else}
       <SvgIcon class="h-7 w-7" path={ICON_PLAY}/>
     {/if}
   </Button>
-  <Button outline={true} class="p-0 rounded-none" size="xs" on:click={next}>
+  <Button class="p-0 control_button rounded-none" size="xs" on:click={next}>
     <SvgIcon class="h-7 w-7" path={ICON_NEXT}/>
   </Button>
 </div>

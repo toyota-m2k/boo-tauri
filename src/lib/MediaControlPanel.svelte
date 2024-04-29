@@ -15,7 +15,6 @@
     ICON_STOP
   } from "./Icons";
   import {Button, Label} from "flowbite-svelte";
-  import {toggleSlideShow} from "./model/SlideShowModel";
   import {formatTime} from "./utils/Utils";
 
   const currentTime$ = viewModel.currentPosition
@@ -79,23 +78,23 @@
 <div class="media-control-panel w-full">
   <!-- Buttons -->
   <div class="buttons flex p-1 justify-center gap-2">
-    <Button color="dark" class="p-0 rounded-none" size="xs" on:click={prev}>
+    <Button class="p-0 control_button rounded-none" size="xs" on:click={prev}>
       <SvgIcon class="h-7 w-7" path={ICON_PREV}/>
     </Button>
-    <Button color="dark" class="p-0 rounded-none" size="xs" on:click={prevChapter}>
+    <Button class="p-0 control_button rounded-none" size="xs" on:click={prevChapter}>
       <SvgIcon class="h-7 w-7" path={ICON_SKIP_PREV}/>
     </Button>
-    <Button color="dark" class="p-0 rounded-none" size="xs" on:click={toggle}>
+    <Button class="p-0 control_button rounded-none" size="xs" on:click={toggle}>
       {#if $playing$}
         <SvgIcon class="h-7 w-7" path={ICON_STOP}/>
       {:else}
         <SvgIcon class="h-7 w-7" path={ICON_PLAY}/>
       {/if}
     </Button>
-    <Button color="dark" class="p-0 rounded-none" size="xs" on:click={nextChapter}>
+    <Button class="p-0 control_button rounded-none" size="xs" on:click={nextChapter}>
       <SvgIcon class="h-7 w-7" path={ICON_SKIP_NEXT}/>
     </Button>
-    <Button color="dark" class="p-0 rounded-none" size="xs" on:click={next}>
+    <Button class="p-0 control_button rounded-none" size="xs" on:click={next}>
       <SvgIcon class="h-7 w-7" path={ICON_NEXT}/>
     </Button>
   </div>
@@ -104,7 +103,7 @@
   <div class="slider-control relative w-full h-[55px]">
     <div class="slider-with-chapters absolute left-[12px] right-[12px] top-0 bg-pink-500">
       <div class="slider-bar absolute top-[16px] h-[8px] w-full"
-        style="background: linear-gradient(to right, var(--color-purple-600) 0%, var(--color-purple-600) {currentTimePercent}%, var(--color-green-500) {currentTimePercent}%, var(--color-green-500) 100%);"
+        style="background: linear-gradient(to right, var(--color-primary) 0%, var(--color-primary) {currentTimePercent}%, var(--color-secondary) {currentTimePercent}%, var(--color-secondary) 100%);"
       />
       {#each disabledRanges as range (range.start)}
         <div class="absolute top-[16px] h-[8px]"
@@ -114,7 +113,7 @@
         />
       {/each}
       {#each chapters as chapter (chapter.position)}
-        <SvgIcon class="absolute top-0 w-[24px] h-[24px] transform -translate-x-1/2 focus:outline-0"
+        <SvgIcon class="absolute top-0 w-[24px] h-[24px] transform -translate-x-1/2 focus:outline-0 {(chapter.skip)?'text-gray-100':'text-accent'}"
                  path={chapter.skip ? ICON_PIN_OFF : ICON_PIN}
                  style="left: {chapter.position / 10 / $duration$}%"
                  withEvents={true}
@@ -123,8 +122,8 @@
       {/each}
 
     </div>
-    <span class="absolute top-[24px] left-[12px] text-gray-300">{formatTime($currentTime$)}</span>
-    <span class="absolute top-[24px] right-[12px] text-gray-300">{formatTime($duration$)}</span>
+    <span class="absolute top-[24px] left-[12px] text-surface-on">{formatTime($currentTime$)}</span>
+    <span class="absolute top-[24px] right-[12px] text-surface-on">{formatTime($duration$)}</span>
 
     <input class="slider absolute w-full h-[28px] top-[14px] left-0 right-0 bg-transparent appearance-none cursor-pointer focus:outline-0 shadow-none" type="range" min="0" max={$duration$}
            on:mousedown={onDragStart} on:mouseup={onDragEnd}
