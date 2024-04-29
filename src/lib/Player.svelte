@@ -78,13 +78,14 @@
   }
 
   function togglePlay() {
-    if (!player) {
-      return;
-    }
-    if (player.paused) {
-      player.play();
+    if(player) {
+      if (player.paused) {
+        player.play();
+      } else {
+        player.pause();
+      }
     } else {
-      player.pause();
+      viewModel.playing.update((it)=>!it)
     }
   }
 
@@ -134,7 +135,7 @@
 
 
 <div class="player-container bg-background w-full h-full">
-  <ZoomView>
+  <ZoomView on:click={togglePlay}>
   {#if currentMediaType === "mp4"}
     <video
       class="media-view"
@@ -143,7 +144,6 @@
       class:original={$fitMode==="original"}
       bind:this={player}
       src={currentMediaUrl}
-      on:dblclick={togglePlay}
       bind:duration={$duration$}
       bind:currentTime={$currentPosition$}
       on:play={onPlay}

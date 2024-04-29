@@ -164,7 +164,7 @@
 </script>
 
 <svelte:window on:resize={onWindowSizeChanged}/>
-<div class="light"> <!-- <-- theme クラスを設定する -->
+<div class="dark"> <!-- <-- theme クラスを設定する -->
 <div bind:this={headerElem} class="title-bar" style:height={`${titleBarHeight}px`} style:top={titleBarShown ? "0px" : `-${titleBarHeight}px`}>
   <TitleBar title={title} on:toggleSidePanel={()=> sidePanelShown=!sidePanelShown}/>
 </div>

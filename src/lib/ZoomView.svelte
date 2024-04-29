@@ -2,8 +2,13 @@
   import {logger} from "./model/DebugLog";
   import {viewModel} from "./model/ViewModel";
   import {globalToLocalPoint} from "./utils/Utils";
+  import {createEventDispatcher, onMount} from "svelte";
+  import {GestureRecognizer} from "./utils/GestureRecognizer";
 
+  const dispatch = createEventDispatcher()
   let view: HTMLDivElement
+  let container: HTMLDivElement
+
   const scale$ = viewModel.mediaScale
   let transformOrigin: { x: number, y: number } = { x: 50, y: 50 }
   let translation: { x: number, y: number } = { x: 0, y: 0 }
@@ -20,7 +25,7 @@
   function clipTranslation(x: number, y: number): { x: number, y: number } {
     const tx = Math.min(0, Math.max(x, draggingInfo.scrollRange.x))
     const ty = Math.min(0, Math.max(y, draggingInfo.scrollRange.y))
-    logger.info(`clipTranslation ${x},${y} => ${tx},${ty}`)
+    // logger.info(`clipTranslation ${x},${y} => ${tx},${ty}`)
     return { x: tx, y: ty }
   }
 
@@ -54,46 +59,47 @@
     viewModel.zoom(newScale)
   }
 
-  function scrollTo(dx:number, dy:number) {
-
-  }
-
-  function onMouseDownOnPlayer(e:MouseEvent) {
-    // const local = globalToLocalPoint(view,e.clientX,e.clientY)
-    // logger.debug(`clicked at ${local.x/viewModel.mediaScale.currentValue},${local.y/viewModel.mediaScale.currentValue} tr=${translation.x} sc=${viewModel.mediaScale.currentValue}`)
-
-    if($scale$===1) return
-    draggingInfo.isDragging = true
-    draggingInfo.initialTranslation = {...translation}
-    draggingInfo.startAt = {x:e.clientX, y:e.clientY}
-
-  }
-  function onMouseMoveOnPlayer(e:MouseEvent) {
-    if(draggingInfo.isDragging) {
-      const dx = (e.clientX - draggingInfo.startAt.x)
-      const dy = (e.clientY - draggingInfo.startAt.y)
-      translation = clipTranslation(draggingInfo.initialTranslation.x+dx, draggingInfo.initialTranslation.y+dy)
-    }
-  }
-
-  function onMouseUpOnPlayer() {
-    draggingInfo.isDragging = false
-  }
-
-
   $: if($scale$===1) {
     translation = {x: 0, y: 0}
   }
-  let container: HTMLDivElement
 
+  onMount(() => {
+    const gestureRecognizer = new GestureRecognizer({
+      onSingleClick: (e)=>{
+        dispatch("click", e)
+      },
+      onDoubleClick: (e)=>{
+        if($scale$===1) return
+        viewModel.zoom(1)
+      },
+      onDragStart: (e)=>{
+        if($scale$===1) return
+        draggingInfo.isDragging = true
+        draggingInfo.initialTranslation = {...translation}
+        draggingInfo.startAt = {x:e.clientX, y:e.clientY}
+      },
+      onDrag: (e)=>{
+        if(draggingInfo.isDragging) {
+          if(draggingInfo.isDragging) {
+            const dx = (e.clientX - draggingInfo.startAt.x)
+            const dy = (e.clientY - draggingInfo.startAt.y)
+            translation = clipTranslation(draggingInfo.initialTranslation.x+dx, draggingInfo.initialTranslation.y+dy)
+          }
+        }
+      },
+      onDragEnd: ()=>{
+        draggingInfo.isDragging = false
+      },
+    })
+    gestureRecognizer.attach(container)
+    return ()=> {
+      gestureRecognizer.detach(container)
+    }
+  })
 </script>
 
 <div bind:this={container} class="zoom-container  w-full h-full overflow-hidden"
    on:wheel={onWheel}
-   on:mousedown={onMouseDownOnPlayer}
-   on:mousemove={onMouseMoveOnPlayer}
-   on:mouseup={onMouseUpOnPlayer}
-   on:mouseleave={onMouseUpOnPlayer}
    role="none"
   >
   <div
