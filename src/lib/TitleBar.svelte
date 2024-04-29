@@ -116,10 +116,10 @@
     padding: 10px;
   }
 
-  .appName {
-    font-size: 1.5rem;
-    margin-right: 1rem;
-  }
+  //.appName {
+  //  font-size: 1.5rem;
+  //  margin-right: 1rem;
+  //}
 
   nav {
     display: flex;

@@ -10,6 +10,7 @@
   import {TimingSwitch} from "./utils/TimingSwitch";
   import MediaControlPanel from "./MediaControlPanel.svelte";
   import ZoomView from "./ZoomView.svelte";
+  import {toggleSlideShow} from "./model/SlideShowModel";
 
   let imageViewer: HTMLImageElement
   let player: HTMLVideoElement
@@ -85,7 +86,7 @@
         player.pause();
       }
     } else {
-      viewModel.playing.update((it)=>!it)
+      toggleSlideShow()
     }
   }
 

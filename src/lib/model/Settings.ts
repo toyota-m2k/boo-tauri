@@ -33,7 +33,7 @@ class Settings implements ISettings {
   }
 
   get slideShowInterval(): number {
-    return this.preferences.get('slideShowInterval', 3)
+    return this.preferences.get('slideShowInterval', 1)
   }
   set slideShowInterval(interval: number) {
     this.preferences.set('slideShowInterval', interval)
