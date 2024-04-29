@@ -95,19 +95,19 @@ export function localToGlobalPoint(element: HTMLElement, x: number, y: number): 
   return {x: x + rect.left, y: y + rect.top}
 }
 
-export function getLocalPoint(event: MouseEvent): {x: number, y: number} {
-  return globalToLocalPoint(elementFromMouseEvent(event), event.clientX, event.clientY)
-}
-
-export function getLocalPointAsPercentage(event: MouseEvent): {x: number, y: number} {
-  return globalToLocalPointAsPercentage(elementFromMouseEvent(event), event.clientX, event.clientY)
-}
-
-
-export function elementFromMouseEvent(event: MouseEvent): HTMLElement {
-  if (!event.target || !(event.target instanceof (HTMLElement))) {
-    return document.elementFromPoint(event.clientX, event.clientY) as HTMLElement
-  } else {
-    return event.target
-  }
-}
+// export function getLocalPoint(event: MouseEvent): {x: number, y: number} {
+//   return globalToLocalPoint(elementFromMouseEvent(event), event.clientX, event.clientY)
+// }
+//
+// export function getLocalPointAsPercentage(event: MouseEvent): {x: number, y: number} {
+//   return globalToLocalPointAsPercentage(elementFromMouseEvent(event), event.clientX, event.clientY)
+// }
+//
+//
+// export function elementFromMouseEvent(event: MouseEvent): HTMLElement {
+//   if (!event.target || !(event.target instanceof (HTMLElement))) {
+//     return document.elementFromPoint(event.clientX, event.clientY) as HTMLElement
+//   } else {
+//     return event.target
+//   }
+// }

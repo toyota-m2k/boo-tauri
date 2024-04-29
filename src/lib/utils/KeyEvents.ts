@@ -106,7 +106,7 @@ class KeyEvents implements IKeyEvents {
 
   private internalKeyboardEventHandler = (e:KeyboardEvent) => {
     if(e.defaultPrevented) return
-    logger.debug(`${e.code} ${e.key} - shift:${e.shiftKey} ctrl:${e.ctrlKey} alt:${e.altKey} meta:${e.metaKey}`)
+    // logger.debug(`${e.code} ${e.key} - shift:${e.shiftKey} ctrl:${e.ctrlKey} alt:${e.altKey} meta:${e.metaKey}`)
     for(const handler of this.handlers) {
       if(handler.handle(e)) {
         e.preventDefault()  // これどうだろう。。。tauriの動きと整合はとれるのか？

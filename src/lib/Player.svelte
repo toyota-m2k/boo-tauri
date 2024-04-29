@@ -2,7 +2,7 @@
   import {viewModel} from "./model/ViewModel";
   import type {Readable} from "svelte/store";
   import type {IMediaItem} from './protocol/IBooProtocol'
-  import {delay, getLocalPoint, getLocalPointAsPercentage, launch} from './utils/Utils'
+  import {delay, launch} from './utils/Utils'
   import {tick} from 'svelte'
   import SlideShowPanel from "./SlideShowPanel.svelte";
   import {logger} from "./model/DebugLog";

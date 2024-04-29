@@ -359,10 +359,7 @@ class ViewModel implements IViewModel {
   mediaScale = currentValueStore<number>(1)
   zoom(v: number): void {
     this.mediaScale.update(it=>{
-      it+=v/10
-      if(it<1) it = 1
-      if(it>5) it = 5
-      return it
+      return v
     })
   }
 
