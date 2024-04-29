@@ -133,7 +133,7 @@
 </script>
 
 
-<div class="player-container bg-background">
+<div class="player-container bg-background w-full h-full">
   <ZoomView>
   {#if currentMediaType === "mp4"}
     <video
@@ -189,13 +189,13 @@
 </div>
 
 <style>
-  .player-container {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 100%;
-    overflow: hidden; /* コンテナからはみ出たビデオの部分を隠します */
-  }
+    /*.player-container {*/
+    /*  display: flex;*/
+    /*  justify-content: center;*/
+    /*  align-items: center;*/
+    /*  height: 100%;*/
+    /*  overflow: hidden; !* コンテナからはみ出たビデオの部分を隠します *!*/
+    /*}*/
 
   .media-view {
     max-width: 100%;

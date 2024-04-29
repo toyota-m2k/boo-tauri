@@ -17,6 +17,13 @@
     scrollRange: { x: 0, y: 0 }
   }
 
+  function clipTranslation(x: number, y: number): { x: number, y: number } {
+    const tx = Math.min(0, Math.max(x, draggingInfo.scrollRange.x))
+    const ty = Math.min(0, Math.max(y, draggingInfo.scrollRange.y))
+    logger.info(`clipTranslation ${x},${y} => ${tx},${ty}`)
+    return { x: tx, y: ty }
+  }
+
   function onWheel(e: WheelEvent) {
     e.preventDefault()
     e.stopPropagation()
@@ -32,27 +39,18 @@
     } else {
       newScale = Math.min(scaleMax, orgScale + 0.1)
     }
-    // const px1 = -translation.x + (pivot.x-0.5*contentRect.width)
-    // const py1 = -translation.y + (pivot.y-0.5*contentRect.height)
-    // const px2 = px1*newScale/orgScale
-    // const py2 = py1*newScale/orgScale
-    // const dx = px2 - px1
-    // const dy = py2 - py1
 
-    // const dx = (newScale - orgScale) * (pivot.x - 0.5 * contentRect.width)
-    // const dy = (newScale - orgScale) * (pivot.y - 0.5 * contentRect.height)
-    // const x0 = (pivot.x - translation.x) / orgScale
-    // const y0 = (pivot.y - translation.y) / orgScale
-    // const dx = x0 * (newScale - 1)
-    // const dy = y0 * (newScale - 1)
+    const viewRect = view.getBoundingClientRect()
+    const containerRect = container.getBoundingClientRect()
 
-
-    const dx = (pivot.x+translation.x) * (newScale - orgScale)
-    const dy = (pivot.y+translation.y) * (newScale - orgScale)
-
-
-
-    translation = {x: translation.x - dx, y: translation.y - dy}
+    const rx = pivot.x / viewRect.width
+    const ry = pivot.y / viewRect.height
+    const ox = rx * containerRect.width
+    const oy = ry * containerRect.height
+    const dx = ox * (newScale - orgScale)
+    const dy = oy * (newScale - orgScale)
+    draggingInfo.scrollRange = {x: containerRect.width*(1-newScale), y: containerRect.height*(1-newScale)}
+    translation = clipTranslation( translation.x - dx, translation.y - dy)
     viewModel.zoom(newScale)
   }
 
@@ -61,8 +59,8 @@
   }
 
   function onMouseDownOnPlayer(e:MouseEvent) {
-    const local = globalToLocalPoint(view,e.clientX,e.clientY)
-    logger.debug(`clicked at ${local.x},${local.y}`)
+    // const local = globalToLocalPoint(view,e.clientX,e.clientY)
+    // logger.debug(`clicked at ${local.x/viewModel.mediaScale.currentValue},${local.y/viewModel.mediaScale.currentValue} tr=${translation.x} sc=${viewModel.mediaScale.currentValue}`)
 
     if($scale$===1) return
     draggingInfo.isDragging = true
@@ -74,8 +72,7 @@
     if(draggingInfo.isDragging) {
       const dx = (e.clientX - draggingInfo.startAt.x)
       const dy = (e.clientY - draggingInfo.startAt.y)
-      translation = {x: draggingInfo.initialTranslation.x+dx, y: draggingInfo.initialTranslation.y+dy}
-      logger.debug(`dx=${dx}, dy=${dy}`)
+      translation = clipTranslation(draggingInfo.initialTranslation.x+dx, draggingInfo.initialTranslation.y+dy)
     }
   }
 
@@ -91,15 +88,16 @@
 
 </script>
 
-<div bind:this={container} class="container w-full h-full"
+<div bind:this={container} class="zoom-container  w-full h-full overflow-hidden"
    on:wheel={onWheel}
    on:mousedown={onMouseDownOnPlayer}
    on:mousemove={onMouseMoveOnPlayer}
    on:mouseup={onMouseUpOnPlayer}
+   on:mouseleave={onMouseUpOnPlayer}
    role="none"
   >
   <div
-    class="zoom-container w-full h-full relative flex justify-center items-center overflow-hidden"
+    class="zoom-view w-full h-full relative flex justify-center items-center"
     bind:this={view}
     style:transform="scale({$scale$})"
     style:transform-origin="0 0"

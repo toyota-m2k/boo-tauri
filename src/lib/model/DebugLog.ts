@@ -22,14 +22,14 @@ class DebugLog implements IDebugLog {
     private nextId = 0
     messages = currentValueStore<IDebugMessage[]>([])
     push(message: string, level:DevMessageLevel) {
-        if(!this.enabled.currentValue) return
-        this.messages.update((prev) => [...prev, {id: this.nextId++, level, message}])
         switch(level) {
             case "debug": console.debug(message); break
             case "info": console.info(message); break
             case "warn": console.warn(message); break
             case "error": console.error(message); break
         }
+        if(!this.enabled.currentValue) return
+        this.messages.update((prev) => [...prev, {id: this.nextId++, level, message}])
     }
     debug(message: string) { this.push(message, "debug") }
     info(message: string) { this.push(message, "info") }
