@@ -163,15 +163,15 @@ class ViewModel implements IViewModel {
   private rawMediaList: IMediaList | undefined
 
   private onFilterChanged() {
-      if(!this.rawMediaList) return
+    if (!this.rawMediaList) return
     const current = this.mediaItemAt(this.currentIndex.currentValue)
-      const filteredList = this.rawMediaList?.list.filter(item => {
+    const filteredList = this.rawMediaList?.list.filter(item => {
       return (this.videoSelected.currentValue && item.media === "v") ||
         (this.audioSelected.currentValue && item.media === "a") ||
         (this.photoSelected.currentValue && item.media === "p")
     })
     const index = filteredList.findIndex(item => item.id === current?.id)
-    if(index<0) {
+    if (index < 0) {
       this._currentIndex.set(-1)
       this.currentPosition.set(0)
       this.duration.set(0)

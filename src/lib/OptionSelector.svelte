@@ -31,7 +31,7 @@
   }
 
   function toggle(type:CurrentValueStore<boolean>) {
-    if(type.currentValue) {
+    if(type.  currentValue) {
       let c = 0
       if(videoSelected.currentValue && videoSupported.currentValue) { c++ }
       if(photoSelected.currentValue && photoSupported.currentValue) { c++ }
@@ -50,19 +50,19 @@
   {#if $typeSelectable}
     <ButtonGroup>
       {#if $videoSupported}
-        <Button size="xs" class="h-7" checked={$videoSelected} on:click={()=>{toggle(videoSelected)}}>
+        <Button size="xs" color="dark" class="h-7 {$videoSelected?`text-primary-variant`:``}" checked={$videoSelected} on:click={()=>{toggle(videoSelected)}}>
           <SvgIcon name="video" class="w-4 h-4" path={ICON_VIDEO}/>
           Video
         </Button>
       {/if}
       {#if $audioSupported}
-        <Button size="xs" class="h-7" checked={$audioSelected} on:click={()=>toggle(audioSelected)}>
+        <Button size="xs" color="dark" class="h-7 {$audioSelected?`text-primary-variant`:``}" checked={$audioSelected} on:click={()=>toggle(audioSelected)}>
           <SvgIcon name="audio" class="w-4 h-4" path={ICON_AUDIO}/>
           Audio
         </Button>
       {/if}
       {#if $photoSupported}
-        <Button size="xs" class="h-7" checked={$photoSelected} on:click={()=>toggle(photoSelected)}>
+        <Button size="xs" color="dark" class="h-7 {$photoSelected?`text-primary-variant`:``}" checked={$photoSelected} on:click={()=>toggle(photoSelected)}>
           <SvgIcon name="photo" class="w-4 h-4" path={ICON_PHOTO}/>
           Photo
         </Button>
