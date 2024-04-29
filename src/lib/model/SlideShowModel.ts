@@ -10,7 +10,7 @@ function isImageType():boolean {
   return item?.media === "p"
 }
 
-const slideShowTimer = new TimingSwitch(5000, ()=>{
+const slideShowTimer = new TimingSwitch(settings.slideShowInterval*1000, ()=>{
   if(viewModel.playing.currentValue && viewModel.currentItem?.media==="p") {
     viewModel.next()
     slideShowTimer.setInterval(settings.slideShowInterval*1000)
@@ -20,13 +20,22 @@ const slideShowTimer = new TimingSwitch(5000, ()=>{
   }
 })
 
+export function startSlideShow() {
+  if(viewModel.currentItem?.media!=="p") return
+  viewModel.playing.set(true)
+  slideShowTimer.setInterval(settings.slideShowInterval*1000)
+  slideShowTimer.start()
+}
+
+export function stopSlideShow() {
+  slideShowTimer.cancel()
+  viewModel.playing.set(false)
+}
+
 export function toggleSlideShow() {
   if(viewModel.playing.currentValue || viewModel.currentItem?.media!=="p") {
-    slideShowTimer.cancel()
-    viewModel.playing.set(false)
+    stopSlideShow()
   } else {
-    viewModel.playing.set(true)
-    slideShowTimer.setInterval(settings.slideShowInterval*1000)
-    slideShowTimer.start()
+    startSlideShow()
   }
 }

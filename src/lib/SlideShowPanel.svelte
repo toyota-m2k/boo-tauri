@@ -4,7 +4,8 @@ import {Button} from "flowbite-svelte";
 import {ICON_NEXT, ICON_PLAY, ICON_PREV, ICON_REPEAT, ICON_STOP} from "./Icons";
 import SvgIcon from "./common/SvgIcon.svelte";
 import {viewModel} from "./model/ViewModel";
-import {toggleSlideShow} from "./model/SlideShowModel";
+import {startSlideShow, toggleSlideShow} from "./model/SlideShowModel";
+import {onMount} from "svelte";
 
 const playing$ = viewModel.playing
 
@@ -17,6 +18,12 @@ function next() {
 function toggle() {
   toggleSlideShow()
 }
+
+onMount(() => {
+  if(viewModel.playing.currentValue) {
+    startSlideShow()
+  }
+})
 
 </script>
 

@@ -17,7 +17,7 @@ export class TimingSwitch {
     logger.debug("TimingSwitch.start: timeout="+this.interval)
     this.cancel()
     this.timerId = setTimeout(()=>{
-      this.timerId = 0
+      this.cancel()
       if(this.callback()) {
         this.start()    // リスタート
       }
