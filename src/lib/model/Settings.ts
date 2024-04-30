@@ -12,6 +12,9 @@ export interface ISettings {
   save(): Promise<void>
 }
 
+export type ColorVariation = 'default' | 'orange' | 'melon' | 'cherry' | 'grape' | 'carrot' | 'blueberry' | 'soda'
+export const colorVariations: ColorVariation[] = ['default', 'orange', 'melon', 'cherry', 'grape', 'carrot', 'blueberry', 'soda']
+
 class Settings implements ISettings {
   private preferences = new Preferences()
   async load(): Promise<void> {
@@ -45,6 +48,19 @@ class Settings implements ISettings {
   set playMode(playMode: PlayMode) {
     this.preferences.set('playMode', playMode)
     launch(()=> { return this.save() })
+  }
+
+  get colorVariation(): ColorVariation {
+    return this.preferences.get('colorVariation', 'default')
+  }
+  set colorVariation(colorVariation: ColorVariation) {
+    this.preferences.set('colorVariation', colorVariation)
+  }
+  get isDarkMode(): boolean {
+    return this.preferences.get('isDarkMode', false)
+  }
+  set isDarkMode(isDarkMode: boolean) {
+    this.preferences.set('isDarkMode', isDarkMode)
   }
 
   async save() {

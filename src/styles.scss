@@ -345,7 +345,7 @@
     --color-primary: var(--color-light-green-600);
     --color-primary-variant: var(--color-light-green-200);
 
-    --color-secondary: var(--color-amber-800);
+    --color-secondary: var(--color-amber-700);
     --color-secondary-variant: var(--color-yellow-200);
 
     --color-accent: var(--color-teal-a200);
@@ -354,8 +354,8 @@
   }
 
   .cherry  {
-    --color-primary: var(--color-pink-600);
-    --color-primary-variant: var(--color-pink-100);
+    --color-primary: var(--color-pink-200);
+    --color-primary-variant: var(--color-pink-50);
     --color-primary-on: var(--color-gray-700);
 
     --color-secondary: var(--color-lime-a400);
@@ -411,6 +411,21 @@
     --color-surface: var(--color-deep-purple-50);
   }
 
+  .soda {
+    --color-primary: var(--color-teal-a200);
+    --color-primary-on: var(--color-gray-600);
+    --color-primary-variant: var(--color-teal-100);
+
+    --color-secondary: var(--color-light-green-a200);
+    --color-secondary-on: var(--color-gray-600);
+    --color-secondary-on-alt: var(--color-gray-500);
+    --color-secondary-variant: var(--color-light-green-100);
+
+    --color-accent: var(--color-pink-a100);
+
+    --color-background: var(--color-teal-50);
+    --color-surface: var(--color-light-green-50);
+  }
 
   .default_button {
     @apply text-primary-on bg-primary hover:bg-primary-variant hover:text-primary-variant-on;

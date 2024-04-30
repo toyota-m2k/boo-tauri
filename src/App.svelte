@@ -20,7 +20,7 @@
   $: if(!$loading$) {
     launch(async () => {
       await tick()
-      onWindowSizeChanged()
+      await onWindowSizeChanged()
       // if(Env.isTauri) {
       //   await tauriEx.setFocusListener((focus)=>{
       //     logger.debug(`focus: ${focus}`)
@@ -28,6 +28,10 @@
       // }
     })
   }
+  const colorVariation$ = viewModel.colorVariation
+  const isDarkMode$ = viewModel.isDarkMode
+  let theme:string
+  $: theme = `${$isDarkMode$ ? "dark " : ""} ${$colorVariation$==="default" ? "" : $colorVariation$}`
 
   let container: HTMLElement
   let headerElem: HTMLElement
@@ -165,7 +169,7 @@
 </script>
 
 <svelte:window on:resize={onWindowSizeChanged}/>
-<div class="bg-background"> <!-- <-- theme クラスを設定する -->
+<div class="{theme} bg-background"> <!-- <-- theme クラスを設定する -->
 <div bind:this={headerElem} class="title-bar" style:height={`${titleBarHeight}px`} style:top={titleBarShown ? "0px" : `-${titleBarHeight}px`}>
   <TitleBar title={title} on:toggleSidePanel={()=> sidePanelShown=!sidePanelShown}/>
 </div>

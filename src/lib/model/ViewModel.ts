@@ -9,13 +9,16 @@ import {launch} from "../utils/Utils";
 import PasswordDialog from "../dialog/PasswordDialog.svelte";
 import {showDialog} from "../dialog/Dialog";
 import SettingsDialog from "../dialog/SettingsDialog.svelte";
-import {settings} from "./Settings";
+import {type ColorVariation, settings} from "./Settings";
 import type {IChapter, IChapterList, IListRequest, IMediaItem, IMediaList, PlayMode} from '../protocol/IBooProtocol'
 import type {IDisposable} from '../utils/IDisposable'
 import {Disposer} from '../utils/Disposer'
 import {disposableSubscribe} from '../utils/DisposableSubscribe'
 
 export interface IViewModel {
+  colorVariation: CurrentValueStore<ColorVariation>
+  isDarkMode: CurrentValueStore<boolean>
+
   // Observable Properties
   // requirePassword: () => Promise<string|undefined>
   mediaList: CurrentValueReadable<IMediaList>
@@ -81,6 +84,10 @@ class ViewModel implements IViewModel {
     return this.requirePassword()
   })
 
+  // デザインテーマ
+  colorVariation: CurrentValueStore<ColorVariation> = currentValueStore<ColorVariation>("default")
+  isDarkMode: CurrentValueStore<boolean> = currentValueStore<boolean>(false)
+
   // カレントホスト
   hostInfo = currentValueStore<HostInfo | undefined>(undefined)
 
@@ -96,6 +103,9 @@ class ViewModel implements IViewModel {
   async initialize() {
     await settings.load()
     this.playMode.set(settings.playMode)
+    this.colorVariation.set(settings.colorVariation)
+    this.isDarkMode.set(settings.isDarkMode)
+
     const hostInfo = settings.currentHost
     if (hostInfo) {
       await this.setHost(hostInfo)
