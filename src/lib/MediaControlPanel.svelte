@@ -86,7 +86,7 @@
     </Button>
     <Button class="p-0 control_button rounded-none" size="xs" on:click={toggle}>
       {#if $playing$}
-        <SvgIcon class="h-7 w-7" path={ICON_STOP}/>
+        <SvgIcon class="h-7 w-7 text-accent" path={ICON_STOP}/>
       {:else}
         <SvgIcon class="h-7 w-7" path={ICON_PLAY}/>
       {/if}
@@ -122,8 +122,8 @@
       {/each}
 
     </div>
-    <span class="absolute top-[24px] left-[12px] text-surface-on">{formatTime($currentTime$)}</span>
-    <span class="absolute top-[24px] right-[12px] text-surface-on">{formatTime($duration$)}</span>
+    <span class="absolute top-[24px] left-[12px] text-gray-200">{formatTime($currentTime$)}</span>
+    <span class="absolute top-[24px] right-[12px] text-gray-200">{formatTime($duration$)}</span>
 
     <input class="slider absolute w-full h-[28px] top-[14px] left-0 right-0 bg-transparent appearance-none cursor-pointer focus:outline-0 shadow-none" type="range" min="0" max={$duration$}
            on:mousedown={onDragStart} on:mouseup={onDragEnd}

@@ -108,10 +108,11 @@
     }
   }
 
-  function onWindowSizeChanged() {
-    logger.info("sidePanelWidth: " + sidePanelWidth)
+  async function onWindowSizeChanged() {
+    // logger.info(`SizeChanged: w=${window.innerWidth}}`)
 
-    if(!Env.isTauri || !tauriEx.isFullscreen()) {
+    if(!Env.isTauri || !await tauriEx.isFullscreen()) {
+      // logger.info("!tauri || !fullscreen : innerWidth=" + window.innerWidth)
       // 画面幅が  px以上になったらサイドパネルを表示する
       if (window.innerWidth >= SidePanelThreshold) {
         sidePanelShown = true
@@ -164,13 +165,13 @@
 </script>
 
 <svelte:window on:resize={onWindowSizeChanged}/>
-<div class="dark"> <!-- <-- theme クラスを設定する -->
+<div class="bg-background"> <!-- <-- theme クラスを設定する -->
 <div bind:this={headerElem} class="title-bar" style:height={`${titleBarHeight}px`} style:top={titleBarShown ? "0px" : `-${titleBarHeight}px`}>
   <TitleBar title={title} on:toggleSidePanel={()=> sidePanelShown=!sidePanelShown}/>
 </div>
 
-<main bind:this={container} class="my-container" style:top={titleBarShown ? `${titleBarHeight}px` : "0px"}>
-  <div class="side-panel bg-background" style:width="{sidePanelWidth}px" style:left={sidePanelShown ? "0px" : `-${sidePanelWidth}px`}>
+<main bind:this={container} class="my-container bg-background" style:top={titleBarShown ? `${titleBarHeight}px` : "0px"}>
+  <div class="side-panel" style:width="{sidePanelWidth}px" style:left={sidePanelShown ? "0px" : `-${sidePanelWidth}px`}>
     <SidePanel/>
   </div>
 

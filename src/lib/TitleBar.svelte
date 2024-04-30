@@ -14,9 +14,14 @@
     ICON_MODE_FILL, ICON_MODE_ORIGINAL
   } from './Icons.js'
   import SvgIcon from './common/SvgIcon.svelte'
+  import type {IMediaItem} from "./protocol/IBooProtocol";
+  import type {Readable} from "svelte/store";
 
   export let title: string;
   const playMode = viewModel.playMode;
+
+  let currentIndex$: Readable<number> = viewModel.currentIndex
+  $: currentMediaType = viewModel.mediaItemAt($currentIndex$)?.media
 
 
   const dispatch = createEventDispatcher()
@@ -25,7 +30,7 @@
     dispatch('toggleSidePanel');
   }
 
-  let headerElem: HTMLElement;
+  // let headerElem: HTMLElement;
   let fitMode = viewModel.fitMode;
   function nextFitMode() {
     if($fitMode === 'fit') {
@@ -55,7 +60,7 @@
 </script>
 
 
-<div bind:this={headerElem} class="header bg-primary text-primary-on">
+<div class="header bg-primary text-primary-on">
   <div class="left-header">
     <button class="menu-button text-primary-on" on:click={toggleSidePanel}>
       <SvgIcon class="h-6 w-6" path={ICON_MENU}/>
@@ -63,25 +68,27 @@
   </div>
   <Viewbox text="{title}" class="flex-grow mr-2"/>
   <nav>
-    <Button class="rounded h-7 bg-secondary" size="xs" on:click={nextFitMode}>
-      {#if $fitMode === 'original'}
-        <SvgIcon class="h-4 w-4" path={ICON_MODE_ORIGINAL}/>
-      {:else if $fitMode === 'fit'}
-        <SvgIcon class="h-4 w-4" path={ICON_MODE_FIT}/>
-      {:else}
-        <SvgIcon class="h-4 w-4" path={ICON_MODE_FILL}/>
-      {/if}
-    </Button>
-    <Button size="xs" class="rounded h-7 bg-secondary" on:click={()=>viewModel.nextPlayMode()}>
-      {#if $playMode === 'single'}
-        <SvgIcon class="h-4 w-4" path={ICON_SINGLE}/>
-      {:else if $playMode === 'sequential'}
-        <SvgIcon class="h-4 w-4" path={ICON_SEQUENTIAL}/>
-      {:else}
-        <SvgIcon class="h-4 w-4" path={ICON_REPEAT}/>
-      {/if}
-    </Button>
-    <Button size="xs" class="rounded h-7 bg-secondary" on:click={showSettingsDialog}>
+    {#if currentMediaType!=="p"}
+      <Button class="rounded h-7 secondary_button" size="xs" on:click={nextFitMode}>
+        {#if $fitMode === 'original'}
+          <SvgIcon class="h-4 w-4" path={ICON_MODE_ORIGINAL}/>
+        {:else if $fitMode === 'fit'}
+          <SvgIcon class="h-4 w-4" path={ICON_MODE_FIT}/>
+        {:else}
+          <SvgIcon class="h-4 w-4" path={ICON_MODE_FILL}/>
+        {/if}
+      </Button>
+      <Button size="xs" class="rounded h-7 secondary_button" on:click={()=>viewModel.nextPlayMode()}>
+        {#if $playMode === 'single'}
+          <SvgIcon class="h-4 w-4" path={ICON_SINGLE}/>
+        {:else if $playMode === 'sequential'}
+          <SvgIcon class="h-4 w-4" path={ICON_SEQUENTIAL}/>
+        {:else}
+          <SvgIcon class="h-4 w-4" path={ICON_REPEAT}/>
+        {/if}
+      </Button>
+    {/if}
+    <Button size="xs" class="rounded h-7 secondary_button" on:click={showSettingsDialog}>
       <SvgIcon class="h-4 w-4" path={ICON_COG}/>
     </Button>
     <!-- 他のナビゲーション要素 -->

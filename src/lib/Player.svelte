@@ -15,15 +15,15 @@
   let imageViewer: HTMLImageElement
   let player: HTMLVideoElement
   let currentIndex$: Readable<number> = viewModel.currentIndex
-  let playMode$: Readable<string> = viewModel.playMode
+  // let playMode$: Readable<string> = viewModel.playMode
   let currentMediaItem: IMediaItem | undefined
   let currentMediaUrl: string | undefined
   let currentMediaType: string | undefined
-  let abortController: AbortController|undefined
+  // let abortController: AbortController|undefined
   $: currentMediaItem = viewModel.mediaItemAt($currentIndex$)
   $: currentMediaUrl = currentMediaItem ? viewModel.mediaUrl(currentMediaItem) : undefined
-  $: currentMediaType = currentMediaItem?.type
-  $: playing$ = viewModel.playing
+  $: currentMediaType = currentMediaItem?.media
+  // $: playing$ = viewModel.playing
   // $: if(currentMediaItem && currentMediaItem.media==='p' && $playMode$==='sequential') {
   //     if(abortController) {
   //       abortController.abort()
@@ -137,7 +137,7 @@
 
 <div class="player-container bg-background w-full h-full">
   <ZoomView on:click={togglePlay}>
-  {#if currentMediaType === "mp4"}
+  {#if currentMediaType === "v"}
     <video
       class="media-view"
       class:fit={$fitMode==="fit"}
@@ -154,12 +154,12 @@
     >
       <track kind="captions" src="">
     </video>
-  {:else if currentMediaType === "png" || currentMediaType === "jpg"}
+  {:else if currentMediaType === "p"}
     <img src="{currentMediaUrl}" class="media-view" alt=""
          draggable="false"
          bind:this={imageViewer}
          >
-  {:else if currentMediaType === "mp3"}
+  {:else if currentMediaType === "a"}
     <p>audio type is not supported yet.</p>
   {:else if currentMediaType}
     <p>unknown media type: {currentMediaType}</p>
@@ -172,13 +172,13 @@
 
   {#if showControlPanel}
   <div class="absolute w-full bottom-0 div-gradient" transition:fade>
-    {#if currentMediaType === "mp4"}
+    {#if currentMediaType === "v"}
       <MediaControlPanel
         on:seekStart={onSeekStart}
         on:seekEnd={onSeekEnd}
         on:toggle={togglePlay}
       />
-    {:else if currentMediaType === "png" || currentMediaType === "jpg"}
+    {:else if currentMediaType === "p"}
       <SlideShowPanel />
     {/if}
   </div>

@@ -33,7 +33,7 @@
 
 </script>
 
-<div class="bg-background">
+<div class="bg-background text-background-on">
   {#if $mediaList.list.length !== 0}
     <Table hoverable={true}>
       <TableBody bind:this={tableBody}>
@@ -42,7 +42,7 @@
           <TableBodyCell on:click={ (e)=>onSelect(e,i) } tdClass="cursor-pointer whitespace-nowrap font-medium text-xs common_surface">
             <div class="px-1 py-0.5" class:selected={currentId===item.id}>
               <div  >{item.name}</div>
-              <div class:text-gray-300={currentId===item.id} class:text-gray-500={currentId!==item.id}>{item.duration!==undefined ? formatTime(item.duration) : formatSize(item.size) }</div>
+              <div class:text-secondary-on-alt={currentId===item.id} class:text-surface-on-alt={currentId!==item.id}>{item.duration!==undefined ? formatTime(item.duration) : formatSize(item.size) }</div>
             </div>
           </TableBodyCell>
         </TableBodyRow>

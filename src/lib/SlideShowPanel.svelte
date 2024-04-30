@@ -33,7 +33,7 @@ onMount(() => {
   </Button>
   <Button class="p-0 control_button rounded-none" size="xs" on:click={toggle}>
     {#if $playing$}
-      <SvgIcon class="h-7 w-7" path={ICON_STOP}/>
+      <SvgIcon class="h-7 w-7 text-accent" path={ICON_STOP}/>
     {:else}
       <SvgIcon class="h-7 w-7" path={ICON_PLAY}/>
     {/if}

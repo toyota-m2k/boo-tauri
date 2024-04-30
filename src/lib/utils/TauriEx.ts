@@ -5,6 +5,7 @@ import {logger} from "../model/DebugLog";
 export type OSPlatForm = "L" | "M" | "W" | "U" | "LB" | "MB" | "WB" | "UB"
 
 class TauriEx {
+
   async fullscreen(flag: boolean): Promise<void> {
     try {
       if (flag) {

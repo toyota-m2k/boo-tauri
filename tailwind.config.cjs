@@ -19,8 +19,11 @@ const config = {
       //   },
       // },
       primary: {
-        DEFAULT: "var(--color-purple-500)",
-        on: "var(--color-primary-on)",
+        DEFAULT: "var(--color-primary)",
+        on: {
+          DEFAULT: "var(--color-primary-on)",
+          alt: "var(--color-primary-on-alt)",
+        },
         variant: {
           DEFAULT: "var(--color-primary-variant)",
           on: "var(--color-primary-variant-on)",
@@ -28,7 +31,10 @@ const config = {
       },
       secondary: {
         DEFAULT: "var(--color-secondary)",
-        on: "var(--color-secondary-on)",
+        on: {
+          DEFAULT: "var(--color-secondary-on)",
+          alt: "var(--color-secondary-on-alt)",
+        },
         variant: {
           DEFAULT: "var(--color-secondary-variant)",
           on: "var(--color-secondary-variant-on)",
@@ -44,7 +50,10 @@ const config = {
       },
       surface: {
         DEFAULT: "var(--color-surface)",
-        on: "var(--color-surface-on)",
+        on: {
+          DEFAULT: "var(--color-surface-on)",
+          alt: "var(--color-surface-on-alt)",
+        },
       },
       error: {
         DEFAULT: "var(--color-error)",
