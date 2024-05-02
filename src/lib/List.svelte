@@ -33,7 +33,7 @@
 
 </script>
 
-<div class="bg-background text-background-on">
+<div class="list-root bg-background text-background-on">
   {#if $mediaList.list.length !== 0}
     <Table hoverable={true}>
       <TableBody bind:this={tableBody}>

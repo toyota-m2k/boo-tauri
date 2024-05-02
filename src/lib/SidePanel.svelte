@@ -1,4 +1,4 @@
-<script lang="ts">
+  <script lang="ts">
   import List from './List.svelte'
   import {onDestroy, onMount, tick} from 'svelte'
   import OptionSelector from './OptionSelector.svelte'
@@ -27,7 +27,7 @@
 </script>
 
 <div bind:this={container} class="side-panel h-full w-full">
-  <div bind:this={list} class="side-panel-body absolute top-0 left-0 right-0 overflow-y-auto">
+  <div bind:this={list} class="side-panel-body absolute top-0 left-0 right-0 overflow-y-auto bg-surface">
     <List/>
   </div>
   <div bind:this={footer} class="side-panel-footer absolute left-0 right-0 bottom-0">

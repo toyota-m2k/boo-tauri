@@ -1,4 +1,4 @@
-import { getCurrent } from '@tauri-apps/api/window'
+import { getCurrent, appWindow } from '@tauri-apps/api/window'
 import { os } from '@tauri-apps/api'
 import {logger} from "../model/DebugLog";
 
@@ -78,6 +78,24 @@ class TauriEx {
         listener(focused)
       })
   }
+
+  async setWindowCloseListener(listener: () => void|Promise<void>): Promise<()=>void> {
+    try {
+      logger.info('set window close listener')
+      return await getCurrent().onCloseRequested(async (e) => {
+        const r = listener()
+        if(r instanceof Promise) await r
+        // this.count++
+        // if(this.count<10) {
+        //   e.preventDefault()
+        // }
+      })
+    } catch(error) {
+      logger.error('Failed to set window close listener')
+      return ()=>{}
+    }
+  }
 }
+
 
 export const tauriEx = new TauriEx()

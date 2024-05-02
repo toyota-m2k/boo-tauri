@@ -26,23 +26,17 @@
   $: currentTimePercent = ($currentTime$ / $duration$) * 100
 
   let chapters: IChapter[] = []
-  let hasChapters = false
-  let disabledRanges:IRange[] = []
-  $: resolveDisabledRanges($chapterList$)
+  // let hasChapters = false
+  const disabledRanges$ = viewModel.disabledRanges
 
-  function resolveDisabledRanges(chapterList: IChapterList|undefined) {
-    const mediaItem = viewModel.currentItem
-    if (!mediaItem || !chapterList || !chapterList.chapters?.length) {
-      hasChapters = false
-      disabledRanges = []
-      chapters = []
-      return
-    }
-    hasChapters = true
-    chapters = chapterList.chapters
-    disabledRanges = getDisabledRanges(chapterList.chapters, RangeOrNull(mediaItem.start, mediaItem.end))
-  }
+  $: chapters = $chapterList$?.chapters ?? []
 
+  // $: if ($playing$ && hasChapters &&$currentTime$>0) {
+  //   const r = disabledRanges.find(r=>r.start<=$currentTime$*1000 && r.end>=$currentTime$*1000)
+  //   if(r){
+  //     viewModel.currentPosition.set(r.end/1000)
+  //   }
+  // }
 
   const dispatch = createEventDispatcher()
 
@@ -105,11 +99,11 @@
       <div class="slider-bar absolute top-[16px] h-[8px] w-full"
         style="background: linear-gradient(to right, var(--color-primary) 0%, var(--color-primary) {currentTimePercent}%, var(--color-secondary) {currentTimePercent}%, var(--color-secondary) 100%);"
       />
-      {#each disabledRanges as range (range.start)}
-        <div class="absolute top-[16px] h-[8px]"
+      {#each $disabledRanges$ as range (range.start)}
+        <div class="grayzone absolute top-[16px] h-[8px]"
              style="background: var(--color-gray-500);
              left: {range.start / 10 / $duration$}%;
-             right: {range.end ? 100 - range.end / 10 / $duration$ : 100}%;"
+             right: {range.end>0 ? (100 - range.end / 10 / $duration$) : 0}%;"
         />
       {/each}
       {#each chapters as chapter (chapter.position)}
