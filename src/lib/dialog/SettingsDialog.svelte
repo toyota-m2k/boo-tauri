@@ -22,13 +22,14 @@
   export let completion: CompletionProc<boolean>|undefined
   let addingHost = false
   let editingHost = false
-  let hostList = [...settings.hostInfoList]
+  let hostInfoList = settings.hostInfoList
+  let hostList = hostInfoList.list
   let currentHost = settings.currentHost
   let newDisplayName = currentHost ? currentHost.displayName : ""
   let newHostPort = currentHost ? currentHost.port : 3500
   let newHostAddress = currentHost ? currentHost.host : "localhost"
   let slideShowInterval = settings.slideShowInterval
-  let modified = false
+  // let modified = false
 
   let colorVariation: ColorVariation = "default"
   let isDarkMode = false
@@ -40,27 +41,19 @@
     if(!h1 || !h2) return false
     return h1.host === h2.host && h1.port === h2.port
   }
-  function containsHost(host: HostInfo):boolean {
-    return hostList.some(h => isSameHost(h, host))
-  }
-  function findHostIndex(host: HostInfo):number {
-    return hostList.findIndex(h => isSameHost(h, host))
-  }
+  // function containsHost(host: HostInfo):boolean {
+  //   return hotInfoList.some(h => isSameHost(h, host))
+  // }
+  // function findHostIndex(host: HostInfo):number {
+  //   return hostList.findIndex(h => isSameHost(h, host))
+  // }
 
   function addHost() {
     if(newDisplayName && newHostAddress && newHostPort) {
       const host = new HostInfo(newDisplayName, newHostAddress, newHostPort)
-      const index = findHostIndex(host)
-      if(index>=0) {
-        if(hostList[index].displayName!==newDisplayName) {
+      if(hostInfoList.add(host)) {
+        if(!currentHost) {
           currentHost = host
-          hostList[index] = host
-          modified = true
-        }
-      } else {
-        if (!containsHost(host)) {
-          hostList.push(host)
-          modified = true
         }
       }
     }
@@ -68,22 +61,12 @@
   }
 
   function deleteHost(host: HostInfo) {
-    const index = findHostIndex(host)
+    let index = hostInfoList.remove(host)
     if(index>=0) {
-      modified = true
-      hostList = hostList.toSpliced(index, 1)
-
-      if(isSameHost(currentHost, host)) {
-        currentHost = undefined
-        if(hostList.length>0) {
-          if(index>0) {
-            currentHost = hostList[index-1]
-          } else {
-            currentHost = hostList[0]
-          }
-        }
-        modified = true
+      if(index>=hostList.length) {
+        index--
       }
+      currentHost = index>=0 ? hostList[index] : undefined
     }
   }
 
@@ -93,9 +76,6 @@
 
   async function complete(ok:boolean) {
     if(ok) {
-      if(modified) {
-          settings.hostInfoList = hostList
-      }
       if(!isSameHost(currentHost,settings.currentHost)) {
           settings.currentHost = currentHost
       }
@@ -111,6 +91,7 @@
       await settings.save()
       completion?.(true)
     } else {
+      await settings.reset()
       viewModel.isDarkMode.set(originalDarkMode)
       viewModel.colorVariation.set(originalColorVariation)
       completion?.(false)

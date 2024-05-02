@@ -1,11 +1,11 @@
-import { readTextFile, writeTextFile } from '@tauri-apps/api/fs';
-import {currentValueStore} from "../utils/CurrentValueStore";
+import {BaseDirectory, readTextFile, writeTextFile} from '@tauri-apps/api/fs';
 import {logger} from "./DebugLog";
 
 export class Preferences {
   private static readonly SETTINGS_FILE = 'settings.json'
+  private static readonly USER_DIR = "user"
 
-  private fileName: string
+  private readonly fileName: string
   private settings: Record<string, unknown> = {}
   private dirty = false
 
@@ -68,5 +68,9 @@ export class Preferences {
   public set<T>(key: string, value: T): void {
     this.settings[key] = value
     this.dirty = true
+  }
+
+  public get isModified(): boolean {
+    return this.dirty
   }
 }

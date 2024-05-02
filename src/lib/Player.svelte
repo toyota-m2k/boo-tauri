@@ -23,7 +23,8 @@
   $: currentMediaItem = viewModel.mediaItemAt($currentIndex$)
   $: currentMediaUrl = currentMediaItem ? viewModel.mediaUrl(currentMediaItem) : undefined
   $: currentMediaType = currentMediaItem?.media
-  // $: playing$ = viewModel.playing
+  const playing$ = viewModel.playing
+
   // $: if(currentMediaItem && currentMediaItem.media==='p' && $playMode$==='sequential') {
   //     if(abortController) {
   //       abortController.abort()
@@ -38,6 +39,31 @@
 
   const duration$ = viewModel.duration
   const currentPosition$ = viewModel.currentPosition
+  const disabledRanges$ = viewModel.disabledRanges
+
+  // 無効チャプターの監視＆スキップ
+  const chapterWatcher:{timerId:number|undefined} = { timerId: undefined }
+  $: if($playing$ && $disabledRanges$.length>0 && currentMediaType!=="p") {
+    if(!chapterWatcher.timerId) {
+      chapterWatcher.timerId = setInterval(() => {
+        const r = $disabledRanges$.find(r => r.start <= $currentPosition$ * 1000 && (!r.end || $currentPosition$ * 1000 < r.end))
+        if (r) {
+          if (r.end > 0) {
+            logger.info(`disabled range: ${$playing$} ${r.start} - ${r.end}`)
+            viewModel.currentPosition.set(r.end / 1000)
+          } else {
+            onEnded()
+          }
+        }
+      }, 200)
+    }
+  } else {
+    if(chapterWatcher.timerId) {
+      clearInterval(chapterWatcher.timerId)
+      chapterWatcher.timerId = undefined
+    }
+  }
+
   // let paused: boolean = false
   // let ended: boolean = false
 
@@ -63,6 +89,7 @@
           await player.play()
           break
         default:
+          player.pause()
           break
       }
     })
@@ -131,6 +158,14 @@
     }
   }
 
+  function onLoaded() {
+    logger.info("onLoaded")
+    const pos = viewModel.initialSeekPosition
+    if(pos>0) {
+      player.currentTime = pos/1000
+    }
+  }
+
 
 </script>
 
@@ -150,6 +185,7 @@
       on:play={onPlay}
       on:pause={onPause}
       on:ended={onEnded}
+      on:loadeddata={onLoaded}
       autoplay
     >
       <track kind="captions" src="">
@@ -171,17 +207,17 @@
   <div class="absolute bottom-0 pb-2 left-0 right-0 flex justify-center h-[95px]" on:mouseenter={onMouseEnterToPanel} on:mousemove={onMouseMoveOnPanel} on:mouseleave={onMouseLeaveFromPanel} role="none">
 
   {#if showControlPanel}
-  <div class="absolute w-full bottom-0 div-gradient" transition:fade>
-    {#if currentMediaType === "v"}
-      <MediaControlPanel
-        on:seekStart={onSeekStart}
-        on:seekEnd={onSeekEnd}
-        on:toggle={togglePlay}
-      />
-    {:else if currentMediaType === "p"}
-      <SlideShowPanel />
-    {/if}
-  </div>
+    <div class="absolute w-full bottom-0 div-gradient" transition:fade>
+      {#if currentMediaType === "v"}
+        <MediaControlPanel
+          on:seekStart={onSeekStart}
+          on:seekEnd={onSeekEnd}
+          on:toggle={togglePlay}
+        />
+      {:else if currentMediaType === "p"}
+        <SlideShowPanel />
+      {/if}
+    </div>
   {/if}
 
   </div>

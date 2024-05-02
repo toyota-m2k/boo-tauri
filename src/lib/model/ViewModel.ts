@@ -5,7 +5,7 @@ import {
   type CurrentValueStore
 } from "../utils/CurrentValueStore";
 import {HostInfo} from "./HostInfo";
-import {launch} from "../utils/Utils";
+import {delay, launch} from "../utils/Utils";
 import PasswordDialog from "../dialog/PasswordDialog.svelte";
 import {showDialog} from "../dialog/Dialog";
 import SettingsDialog from "../dialog/SettingsDialog.svelte";
@@ -14,6 +14,10 @@ import type {IChapter, IChapterList, IListRequest, IMediaItem, IMediaList, PlayM
 import type {IDisposable} from '../utils/IDisposable'
 import {Disposer} from '../utils/Disposer'
 import {disposableSubscribe} from '../utils/DisposableSubscribe'
+import {Env} from "../utils/Env";
+import {tauriEx} from "../utils/TauriEx";
+import {logger} from "./DebugLog";
+import {getDisabledRanges, type IRange, RangeOrNull} from "./ChapterUtils";
 
 export interface IViewModel {
   colorVariation: CurrentValueStore<ColorVariation>
@@ -25,9 +29,11 @@ export interface IViewModel {
   listRequest: IListRequest
   hostInfo: CurrentValueReadable<HostInfo | undefined>
   currentIndex: CurrentValueReadable<number>
+  initialSeekPosition: number
   // currentMediaItem: CurrentValueReadable<IMediaItem|undefined>
   isBusy: CurrentValueReadable<boolean>
   chapterList: CurrentValueReadable<IChapterList | undefined>
+  disabledRanges: CurrentValueReadable<IRange[]>
   currentPosition: CurrentValueStore<number>
   duration: CurrentValueStore<number>
   fitMode: CurrentValueStore<FitMode>
@@ -73,6 +79,8 @@ export interface IViewModel {
   // closePasswordDialog: (password:string | undefined) => void
 
   zoom(v: number): void
+
+  saveCurrentPosition: (hostInfo?:HostInfo) => Promise<void>
 }
 
 export type FitMode = "fit" | "fill" | "original"
@@ -112,6 +120,11 @@ class ViewModel implements IViewModel {
     } else {
       await this.showSettingsDialog()
     }
+    if(Env.isTauri) {
+      await tauriEx.setWindowCloseListener(() => {
+        this.saveCurrentPosition()
+      })
+    }
   }
 
 
@@ -141,6 +154,8 @@ class ViewModel implements IViewModel {
 
   // チャプターリスト
   chapterList = currentValueStore<IChapterList | undefined>(undefined)
+
+  disabledRanges = currentValueStore<IRange[]>([])
 
   // hasChapterList: CurrentValueReadable<boolean> = currentValueMap(this.chapterList, cl => cl !== undefined && cl.items.length > 0)
 
@@ -190,6 +205,13 @@ class ViewModel implements IViewModel {
     this.setCurrentIndex(index)
   }
 
+  private _initialSeekPosition = 0
+  get initialSeekPosition() {
+    const r = this._initialSeekPosition
+    this._initialSeekPosition = 0
+    return r
+  }
+
   async setHost(hostInfo: HostInfo): Promise<boolean> {
     if (this.isBusy.currentValue) {
       return false
@@ -220,9 +242,21 @@ class ViewModel implements IViewModel {
         this.rawMediaList = list
         this.mediaList.set(list)
         this.hostInfo.set(hostInfo)
-        if (list.list.length > 0) {
-          this.setCurrentIndex(0)
+
+        // 前回の再生位置を復元
+        let playIndex = 0
+        if(hostInfo.currentMediaId) {
+          list.list.find((item, index) => {
+            if(item.id === hostInfo.currentMediaId) {
+              playIndex = index
+              this._initialSeekPosition = hostInfo.currentMediaPosition ?? 0
+              // logger.info(`found: ${item.id} ${playIndex} -- ${playPosition}`)
+              return true
+            }
+          })
         }
+        this.setCurrentIndex(playIndex)
+
         const observers = new Disposer()
         if(this.boo.isSupported("v")) {
           this.videoSupported.set(true)
@@ -254,12 +288,26 @@ class ViewModel implements IViewModel {
       launch(async () => {
         await this.boo.noop()
         this.chapterList.set(undefined)
+        this.disabledRanges.set([])
         this.mediaScale.set(1)
         this._currentIndex.set(index)
-        const cl = await this.boo.chapters(mediaList.list[index].id)
-        if (index == this.currentIndex.currentValue) {   // check if the index is still the same
-          this.chapterList.set(cl)
+        const id = mediaList.list[index].id
+        if(id!==settings.currentHost?.currentMediaId) {
+          // 前回と異なるメディアが選択された場合は、再生位置をリセット
+          // 初回起動時、設定変更後のsetHost()から呼ばれたときは、リセットしない。
+          settings.hostInfoList.updateCurrentMediaInfo(id)
         }
+        const cl = await this.boo.chapters(id)
+        if (index === this.currentIndex.currentValue) {   // check if the index is still the same
+          this.chapterList.set(cl)
+          if(cl.chapters) {
+            const mediaItem = this.currentItem
+            if(mediaItem) {
+              this.disabledRanges.set(getDisabledRanges(cl.chapters, RangeOrNull(mediaItem.start, mediaItem.end)))
+            }
+          }
+        }
+        await settings.save()
       })
       return true
     } else {
@@ -316,9 +364,12 @@ class ViewModel implements IViewModel {
   }
 
   async showSettingsDialog() {
+    const orgHost = this.hostInfo.currentValue
     if(await showDialog<boolean>((params) => {
+
       return new SettingsDialog(params)
     })) {
+      await this.saveCurrentPosition(orgHost)
       const hostInfo = settings.currentHost
       if(hostInfo) {
         await this.setHost(hostInfo)
@@ -373,7 +424,15 @@ class ViewModel implements IViewModel {
     })
   }
 
-
+  async saveCurrentPosition(hostInfo?:HostInfo) {
+    // logger.info(`saveCurrentPosition ${this.hostInfo.currentValue?.displayName} ${this.currentItem?.media} ${this.currentPosition.currentValue}`)
+    if(this.hostInfo && this.currentItem?.id && this.currentItem.media !== "p" && this.currentPosition.currentValue > 0) {
+      settings.hostInfoList.updateCurrentMediaInfo(this.currentItem.id, this.currentPosition.currentValue * 1000, hostInfo)
+      await settings.save()
+      // logger.info("saved")
+      // await delay(3000)
+    }
+  }
 }
 
 export type CompletionProc<T> = (value: T) => void
