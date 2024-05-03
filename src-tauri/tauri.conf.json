@@ -18,7 +18,7 @@
       },
       "fs": {
         "all": true,
-        "scope": ["settings.json"]
+        "scope": ["settings.json", "$APPDATA/settings.json"]
       },
       "window": {
         "all": false,
@@ -51,6 +51,10 @@
       "active": true,
       "targets": "all",
       "identifier": "io.github.toyota32k.bootauri",
+      "publisher": "toyota32k",
+      "copyright": "Copyright (c) 2024 toyota32k",
+      "category": "Utility",
+      "shortDescription": "boo player application   ",
       "icon": [
         "icons/32x32.png",
         "icons/128x128.png",
