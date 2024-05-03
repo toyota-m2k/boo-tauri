@@ -1,5 +1,6 @@
 import {BaseDirectory, readTextFile, writeTextFile} from '@tauri-apps/api/fs';
 import {logger} from "./DebugLog";
+import {tauriEx} from "../utils/TauriEx";
 
 export class Preferences {
   private static readonly SETTINGS_FILE = 'settings.json'
@@ -13,12 +14,13 @@ export class Preferences {
     this.fileName = fileName
   }
   public async load(): Promise<void> {
-    try {
-      const settings = await readTextFile(this.fileName)
-      this.settings = JSON.parse(settings)
+    const data = await tauriEx.readJson(this.fileName)
+    if (data) {
+      this.settings = JSON.parse(data)
       this.dirty = false
-    } catch (error) {
+    } else {
       logger.error('Failed to load settings.json')
+      this.dirty = true
       this.settings = {
         hostInfoList: [
           {
@@ -42,23 +44,20 @@ export class Preferences {
             port: 3800
           },
         ],
-        currentHost: {
-          displayName: "2F-MakibaO-Boo",
-          host: "192.168.0.151",
-          port: 3500
-        },
-
+        currentHostIndex: 0,
       }
     }
   }
 
   public async save(force:boolean=false): Promise<void> {
     if(!this.dirty && !force) return
-    try {
-      await writeTextFile(this.fileName, JSON.stringify(this.settings))
-    } catch (error) {
+    if(!await tauriEx.writeJson(this.fileName, JSON.stringify(this.settings))) {
       logger.error('Failed to save settings.json')
     }
+
+    logger.info("Settings saved.")
+    this.dirty = false
+    return
   }
 
   public get<T>(key: string, defaultValue: T): T {
