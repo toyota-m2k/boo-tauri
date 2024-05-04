@@ -1,7 +1,7 @@
 {
   "name": "bootauri",
   "private": true,
-  "version": "0.0.0",
+  "version": "0.1.0",
   "type": "module",
   "scripts": {
     "dev": "vite",
@@ -11,12 +11,12 @@
     "tauri": "tauri"
   },
   "dependencies": {
-    "@tauri-apps/api": "^1",
+    "@tauri-apps/api": "^1.5.4",
     "sha256-uint8array": "^0.10.7"
   },
   "devDependencies": {
     "@sveltejs/vite-plugin-svelte": "^3.0.1",
-    "@tauri-apps/cli": "^1",
+    "@tauri-apps/cli": "^1.5.12",
     "@tsconfig/svelte": "^5.0.2",
     "autoprefixer": "^10.4.16",
     "flowbite": "^2.3.0",

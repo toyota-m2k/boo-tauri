@@ -2,6 +2,7 @@ import {getCurrent} from '@tauri-apps/api/window'
 import {os} from '@tauri-apps/api'
 import {logger} from "../model/DebugLog";
 import {BaseDirectory, createDir, type FsOptions, readTextFile, writeTextFile} from "@tauri-apps/api/fs";
+import {appDataDir} from "@tauri-apps/api/path";
 
 export type OSPlatForm = "L" | "M" | "W" | "U" | "LB" | "MB" | "WB" | "UB"
 
@@ -129,111 +130,36 @@ class TauriEx {
 
 
   async readJson(filename:string): Promise<string|undefined> {
-    let data: string
-    if (!this.fsType) {
-      if ((await this.getOS()).length !== 1) {
-        // browser mode
-        this.fsType = "uav"
-        return undefined
-      } else {
-        let r = await this.checkFsAndRead(filename, {dir: BaseDirectory.AppData})
-        if (r.result) {
-          logger.info('fs:appdata available')
-          this.fsType = "appdata"
-          return r.data
-        }
-        r = await this.checkFsAndRead(filename, {dir: BaseDirectory.App})
-        if (r.result) {
-          logger.info('fs:app available')
-          this.fsType = "app"
-          return r.data
-        }
-        r = await this.checkFsAndRead(filename)
-        if (r.result) {
-          logger.info('fs:default available')
-          this.fsType = "default"
-          return r.data
-        }
-        this.fsType = "uav"
-        return undefined
-      }
+    if ((await this.getOS()).length !== 1) {
+      // browser mode
+      return undefined
     } else {
       try {
-        logger.info('fsType: ' + this.fsType)
-        switch (this.fsType) {
-          case "appdata":
-            data = await readTextFile(filename, {dir: BaseDirectory.AppData})
-            break
-          case "app":
-            data = await readTextFile(filename, {dir: BaseDirectory.App})
-            break
-          case "default":
-            data = await readTextFile(filename)
-            break
-          default:
-            return undefined
-        }
-      } catch (e) {
-        logger.error('Failed to read file: ' + e)
+        const dir = await appDataDir()
+        return await readTextFile(filename, {dir: BaseDirectory.AppData})
+      } catch(e) {
+        logger.error('Read Failed (appdata): ' + e)
         return undefined
       }
     }
   }
 
   async writeJson(filename:string, data:string): Promise<boolean> {
-    if (true/*!this.fsType*/) {
-      if ((await this.getOS()).length !== 1) {
-        // browser mode
-        this.fsType = "uav"
-        return false
-      } else {
-        try {
-          await writeTextFile(filename, data, {dir: BaseDirectory.AppData})
-          this.fsType = "appdata"
-          return true
-        } catch (e) {
-          logger.error('Failed (appdata): ' + e)
-        }
-
-        try {
-          await writeTextFile(filename, data, {dir: BaseDirectory.App})
-          this.fsType = "app"
-          return true
-        } catch (e) {
-          logger.error('Failed (app): ' + e)
-        }
-
-        try {
-          await writeTextFile(filename, data)
-          this.fsType = "default"
-          return true
-        } catch (e) {
-          logger.error('Failed (default): ' + e)
-        }
-        this.fsType = "uav"
-        return false
-      }
+    if ((await this.getOS()).length !== 1) {
+      // browser mode
+      return false
     } else {
       try {
-        logger.info('fsType: ' + this.fsType)
-        switch (this.fsType) {
-          case "appdata":
-            await writeTextFile(filename, data, {dir: BaseDirectory.AppData})
-            return true
-          case "app":
-            await writeTextFile(filename, data, {dir: BaseDirectory.App})
-            return true
-          case "default":
-            await writeTextFile(filename, data)
-            return true
-          default:
-            return false
-        }
-      } catch (e) {
-        logger.error('Failed to write file: ' + e)
+        const dir = await appDataDir()
+        await createDir(dir, {recursive: true})
+        await writeTextFile(filename, data, {dir: BaseDirectory.AppData})
+        return true
+      } catch(e) {
+        logger.error('Write Failed (appdata): ' + e)
         return false
       }
     }
+
   }
 }
 
