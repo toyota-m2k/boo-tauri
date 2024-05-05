@@ -122,7 +122,7 @@ class ViewModel implements IViewModel {
     }
     if(Env.isTauri) {
       await tauriEx.setWindowCloseListener(() => {
-        this.saveCurrentPosition()
+        return this.saveCurrentPosition()
       })
     }
   }
