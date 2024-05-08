@@ -12,6 +12,8 @@
   import ZoomView from "./ZoomView.svelte";
   import {stopSlideShow, toggleSlideShow} from "./model/SlideShowModel";
   import {globalKeyEvents, keyFor} from "./utils/KeyEvents";
+  import {Env} from "./utils/Env";
+  import {tauriEx} from "./utils/TauriEx";
 
   let imageViewer: HTMLImageElement
   let player: HTMLVideoElement
@@ -172,6 +174,9 @@
       player.pause()
     } else {
       stopSlideShow()
+    }
+    if(Env.isTauri) {
+      tauriEx.minimizeApp()
     }
   }
 

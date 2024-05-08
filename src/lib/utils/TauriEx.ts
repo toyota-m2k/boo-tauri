@@ -3,6 +3,8 @@ import {os} from '@tauri-apps/api'
 import {logger} from "../model/DebugLog";
 import {BaseDirectory, createDir, type FsOptions, readTextFile, writeTextFile} from "@tauri-apps/api/fs";
 import {appDataDir} from "@tauri-apps/api/path";
+import {tick} from "svelte";
+import {delay} from "./Utils";
 
 export type OSPlatForm = "L" | "M" | "W" | "U" | "LB" | "MB" | "WB" | "UB"
 
@@ -11,6 +13,7 @@ export type FSType = "uav" | "appdata" | "app" | "default"
 class TauriEx {
 
   async fullscreen(flag: boolean): Promise<void> {
+    logger.info('fullscreen: ' + flag)
     try {
       if (flag) {
         // Windowを最大化
@@ -112,6 +115,22 @@ class TauriEx {
       await getCurrent().close()
     } catch (e) {
       logger.error('Failed to close app')
+    }
+  }
+
+  async minimizeApp(): Promise<void> {
+    try {
+      if(await this.isFullscreen()) {
+        await getCurrent().unmaximize()
+        await getCurrent().setFullscreen(false)
+        if(await this.getOS()==='M') {
+          // フルスクリーン解除後１秒待つ。。。これがないと一旦は最小化されるが、すぐに戻ってきてしまう。(MACのみ)
+          await delay(1000)
+        }
+      }
+      await getCurrent().minimize()
+    } catch (e) {
+      logger.error('Failed to minimize app')
     }
   }
 
