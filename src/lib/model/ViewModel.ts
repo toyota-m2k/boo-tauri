@@ -5,7 +5,7 @@ import {
   type CurrentValueStore
 } from "../utils/CurrentValueStore";
 import {HostInfo} from "./HostInfo";
-import {delay, launch} from "../utils/Utils";
+import {launch} from "../utils/Utils";
 import PasswordDialog from "../dialog/PasswordDialog.svelte";
 import {showDialog} from "../dialog/Dialog";
 import SettingsDialog from "../dialog/SettingsDialog.svelte";
@@ -16,7 +16,6 @@ import {Disposer} from '../utils/Disposer'
 import {disposableSubscribe} from '../utils/DisposableSubscribe'
 import {Env} from "../utils/Env";
 import {tauriEx} from "../utils/TauriEx";
-import {logger} from "./DebugLog";
 import {getDisabledRanges, type IRange, RangeOrNull} from "./ChapterUtils";
 
 export interface IViewModel {
@@ -260,15 +259,15 @@ class ViewModel implements IViewModel {
         const observers = new Disposer()
         if(this.boo.isSupported("v")) {
           this.videoSupported.set(true)
-          observers.add(disposableSubscribe(this.videoSelected, (value) => { this.onFilterChanged() }))
+          observers.add(disposableSubscribe(this.videoSelected, () => { this.onFilterChanged() }))
         }
         if(this.boo.isSupported("a")) {
           this.audioSupported.set(true)
-          observers.add(disposableSubscribe(this.audioSelected, (value) => { this.onFilterChanged() }))
+          observers.add(disposableSubscribe(this.audioSelected, () => { this.onFilterChanged() }))
         }
         if(this.boo.isSupported("p")) {
           this.photoSupported.set(true)
-          observers.add(disposableSubscribe(this.photoSelected, (value) => { this.onFilterChanged() }))
+          observers.add(disposableSubscribe(this.photoSelected, () => { this.onFilterChanged() }))
         }
         if(observers.count>1) {
           this.typeSelectable.set(true)
@@ -343,7 +342,7 @@ class ViewModel implements IViewModel {
   nextChapter(/*isPlaying:boolean*/) {
     const cl = this.chapterList.currentValue?.chapters
     const pos = this.currentPosition.currentValue * 1000 // ms
-    this.goChapter(cl?.find((c, i) => {
+    this.goChapter(cl?.find((c) => {
       return pos < c.position
     }))
   }
@@ -351,7 +350,7 @@ class ViewModel implements IViewModel {
   prevChapter() {
     const cl = this.chapterList.currentValue?.chapters
     const pos = this.currentPosition.currentValue * 1000 - (this.playing.currentValue ? 250 : 0)  // ms
-    this.goChapter(cl?.findLast((c, i) => {
+    this.goChapter(cl?.findLast((c) => {
       return pos > c.position
     }))
   }
@@ -377,51 +376,16 @@ class ViewModel implements IViewModel {
     }
   }
 
-  private passwordPromise: Promise<string|undefined> | undefined
-  private passwordResolver: ((value: string|undefined) => void) | undefined
+  // private passwordPromise: Promise<string|undefined> | undefined
+  // private passwordResolver: ((value: string|undefined) => void) | undefined
 
   async showPasswordDialog(): Promise<string|undefined>{
     return showDialog<string|undefined>((params)=>{ return new PasswordDialog(params) })
-
-
-    // let complettionProc: CompletionProc<string|undefined>|undefined = undefined
-    // function complete(value: string|undefined) {
-    //   if(complettionProc) {
-    //     complettionProc(value)
-    //   }
-    // }
-    //
-    // const elem = document.getElementById("dialogContainer") as HTMLElement
-    // let dlg: PasswordDialog|undefined
-    // const password = await new Promise<string|undefined>((resolve, reject) => {
-    //   dlg = new PasswordDialog({
-    //     target: elem,
-    //     props: {
-    //       title: "Password",
-    //       completion: (value:string|undefined)=> {
-    //         resolve(value)
-    //       }
-    //     }
-    //   })
-    // })
-    // if(dlg!==undefined) {
-    //   dlg.$destroy()
-    // }
-    // return password
   }
-
-  // closePasswordDialog(password:string | undefined) {
-  //   this.passwordDialog.set(false)
-  //   if(this.passwordResolver) {
-  //     this.passwordResolver(password)
-  //   }
-  // }
 
   mediaScale = currentValueStore<number>(1)
   zoom(v: number): void {
-    this.mediaScale.update(it=>{
-      return v
-    })
+    this.mediaScale.set(v)
   }
 
   async saveCurrentPosition(hostInfo?:HostInfo) {

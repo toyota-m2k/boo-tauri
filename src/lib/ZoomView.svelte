@@ -10,7 +10,7 @@
   let container: HTMLDivElement
 
   const scale$ = viewModel.mediaScale
-  let transformOrigin: { x: number, y: number } = { x: 50, y: 50 }
+  // let transformOrigin: { x: number, y: number } = { x: 50, y: 50 }
   let translation: { x: number, y: number } = { x: 0, y: 0 }
   export let scaleMax: number = 10
   export let scaleMin: number = 1
@@ -32,7 +32,7 @@
   function onWheel(e: WheelEvent) {
     e.preventDefault()
     e.stopPropagation()
-    const contentRect = view.getBoundingClientRect()
+    // const contentRect = view.getBoundingClientRect()
     const local = globalToLocalPoint(view, e.clientX, e.clientY)
     logger.debug(`onWheel (${local?.x ?? "u/a"}, ${local?.y ?? "u/a"})`)
     // transformOrigin = getLocalPointAsPercentage(e)
@@ -68,7 +68,7 @@
       onSingleClick: (e)=>{
         dispatch("click", e)
       },
-      onDoubleClick: (e)=>{
+      onDoubleClick: ()=>{
         if($scale$===1) return
         viewModel.zoom(1)
       },

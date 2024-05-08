@@ -1,10 +1,9 @@
-import {BaseDirectory, readTextFile, writeTextFile} from '@tauri-apps/api/fs';
 import {logger} from "./DebugLog";
 import {tauriEx} from "../utils/TauriEx";
 
 export class Preferences {
   private static readonly SETTINGS_FILE = 'settings.json'
-  private static readonly USER_DIR = "user"
+  // private static readonly USER_DIR = "user"
 
   private readonly fileName: string
   private settings: Record<string, unknown> = {}

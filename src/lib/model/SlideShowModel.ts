@@ -5,10 +5,10 @@ import {TimingSwitch} from "../utils/TimingSwitch";
 import {viewModel} from "./ViewModel";
 import {settings} from "./Settings";
 
-function isImageType():boolean {
-  const item = viewModel.currentItem
-  return item?.media === "p"
-}
+// function isImageType():boolean {
+//   const item = viewModel.currentItem
+//   return item?.media === "p"
+// }
 
 const slideShowTimer = new TimingSwitch(settings.slideShowInterval*1000, ()=>{
   if(viewModel.playing.currentValue && viewModel.currentItem?.media==="p") {

@@ -1,7 +1,7 @@
 <script lang="ts">
 
 import {Button} from "flowbite-svelte";
-import {ICON_NEXT, ICON_PLAY, ICON_PREV, ICON_REPEAT, ICON_STOP} from "./Icons";
+import {ICON_NEXT, ICON_PLAY, ICON_PREV, ICON_STOP} from "./Icons";
 import SvgIcon from "./common/SvgIcon.svelte";
 import {viewModel} from "./model/ViewModel";
 import {startSlideShow, toggleSlideShow} from "./model/SlideShowModel";

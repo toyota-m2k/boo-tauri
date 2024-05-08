@@ -1,8 +1,7 @@
 <script lang="ts">
   import {viewModel} from "./model/ViewModel";
   import {createEventDispatcher} from "svelte";
-  import type {IChapter, IChapterList} from "./protocol/IBooProtocol";
-  import {getDisabledRanges, type IRange, RangeOrNull} from "./model/ChapterUtils";
+  import type {IChapter} from "./protocol/IBooProtocol";
   import SvgIcon from "./common/SvgIcon.svelte";
   import {
     ICON_NEXT,
@@ -14,7 +13,7 @@
     ICON_SKIP_PREV,
     ICON_STOP
   } from "./Icons";
-  import {Button, Label} from "flowbite-svelte";
+  import {Button} from "flowbite-svelte";
   import {formatTime} from "./utils/Utils";
 
   const currentTime$ = viewModel.currentPosition
@@ -100,7 +99,7 @@
         style="background: linear-gradient(to right, var(--color-primary) 0%, var(--color-primary) {currentTimePercent}%, var(--color-secondary) {currentTimePercent}%, var(--color-secondary) 100%);"
       />
       {#each $disabledRanges$ as range (range.start)}
-        <div class="grayzone absolute top-[16px] h-[8px]"
+        <div class="gray-zone absolute top-[16px] h-[8px]"
              style="background: var(--color-gray-500);
              left: {range.start / 10 / $duration$}%;
              right: {range.end>0 ? (100 - range.end / 10 / $duration$) : 0}%;"

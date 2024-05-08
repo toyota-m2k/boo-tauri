@@ -21,9 +21,11 @@
 
   const hostInfo = viewModel.hostInfo
 
-  let selectablePrev:boolean|undefined = undefined
-  $: if ($typeSelectable !== selectablePrev) {
-    selectablePrev = typeSelectable.currentValue
+  const innerStatus : {
+    selectablePrev?:boolean
+  } = {}
+  $: if ($typeSelectable !== innerStatus.selectablePrev) {
+    innerStatus.selectablePrev = typeSelectable.currentValue
     launch(async () => {
       await tick()
       dispatch('heightChanged')

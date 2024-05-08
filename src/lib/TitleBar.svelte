@@ -2,8 +2,7 @@
   import Viewbox from "./common/Viewbox.svelte";
   import {createEventDispatcher} from 'svelte';
   import {viewModel} from "./model/ViewModel";
-  import {Button, GradientButton} from "flowbite-svelte";
-  // import {CogOutline} from "flowbite-svelte-icons";
+  import {Button} from "flowbite-svelte";
   import {
     ICON_COG,
     ICON_REPEAT,
@@ -14,7 +13,6 @@
     ICON_MODE_FILL, ICON_MODE_ORIGINAL
   } from './Icons.js'
   import SvgIcon from './common/SvgIcon.svelte'
-  import type {IMediaItem} from "./protocol/IBooProtocol";
   import type {Readable} from "svelte/store";
 
   export let title: string;

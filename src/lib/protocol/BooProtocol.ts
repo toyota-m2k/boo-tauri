@@ -17,7 +17,7 @@ class BooProtocolImpl implements IBooProtocol {
   private capabilities: ICapabilities | undefined
   private authToken: IAuthToken | undefined
   private challenge: string | undefined
-  private requirePassword: (() => Promise<string|undefined>)
+  private readonly requirePassword: (() => Promise<string|undefined>)
 
   constructor(requirePassword: () => Promise<string|undefined>) {
     this.requirePassword = requirePassword
@@ -34,7 +34,7 @@ class BooProtocolImpl implements IBooProtocol {
     try {
       this.reset()
       this.hostInfo = hostInfo
-      this.capabilities = await this.getCapabilities(hostInfo)
+      this.capabilities = await this.getCapabilities()
       this.challenge = this.capabilities?.challenge
       return this.capabilities !== undefined
     } catch (e: any) {
@@ -44,7 +44,7 @@ class BooProtocolImpl implements IBooProtocol {
     }
   }
 
-  private async getCapabilities(hostInfo: IHostInfo): Promise<ICapabilities> {
+  private async getCapabilities(): Promise<ICapabilities> {
     const url = this.baseUri + 'capability'
     const r = await fetchWithTimeout(url, 3000)
     if (!r.ok) {
@@ -57,6 +57,7 @@ class BooProtocolImpl implements IBooProtocol {
     if (this.hostInfo === undefined) {
       throw new Error('hostInfo is not initialized')
     }
+    // noinspection HttpUrlsUsage
     return `http://${this.hostInfo.host}:${this.hostInfo.port}/`
   }
 
@@ -123,6 +124,7 @@ class BooProtocolImpl implements IBooProtocol {
           logger.debug(`boo auth result = ${JSON.stringify(ret)}`)
           return ret
         } else {
+          // noinspection ExceptionCaughtLocallyJS
           throw new BooError('auth', 'auth token is not set.')
         }
       } catch (e: unknown) {

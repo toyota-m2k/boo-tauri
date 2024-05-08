@@ -2,15 +2,16 @@
   import {viewModel} from "./model/ViewModel";
   import type {Readable} from "svelte/store";
   import type {IMediaItem} from './protocol/IBooProtocol'
-  import {delay, launch} from './utils/Utils'
-  import {tick} from 'svelte'
+  import {launch} from './utils/Utils'
+  import {onMount, tick} from 'svelte'
   import SlideShowPanel from "./SlideShowPanel.svelte";
   import {logger} from "./model/DebugLog";
   import {fade, scale} from 'svelte/transition'
   import {TimingSwitch} from "./utils/TimingSwitch";
   import MediaControlPanel from "./MediaControlPanel.svelte";
   import ZoomView from "./ZoomView.svelte";
-  import {toggleSlideShow} from "./model/SlideShowModel";
+  import {stopSlideShow, toggleSlideShow} from "./model/SlideShowModel";
+  import {globalKeyEvents, keyFor} from "./utils/KeyEvents";
 
   let imageViewer: HTMLImageElement
   let player: HTMLVideoElement
@@ -166,6 +167,23 @@
     }
   }
 
+  function emergencyStop() {
+    if(player) {
+      player.pause()
+    } else {
+      stopSlideShow()
+    }
+  }
+
+  onMount(() => {
+    globalKeyEvents
+      .register(
+        keyFor({key: "NumpadEnter", asCode: true}),
+        () => {
+          emergencyStop?.()
+        }
+      )
+  })
 
 </script>
 

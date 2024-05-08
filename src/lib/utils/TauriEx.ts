@@ -107,6 +107,14 @@ class TauriEx {
     }
   }
 
+  async closeApp(): Promise<void> {
+    try {
+      await getCurrent().close()
+    } catch (e) {
+      logger.error('Failed to close app')
+    }
+  }
+
 
   fsType: FSType|undefined = undefined
 

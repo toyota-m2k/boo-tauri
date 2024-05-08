@@ -86,6 +86,7 @@ export interface IKeyEvents {
   activate(): IKeyEvents
   deactivate(): IKeyEvents
   register(targetKey: IKey|IKey[], action:()=>void): IKeyEvents
+  registerOnTauri(targetKey: IKey|IKey[], action:()=>void): IKeyEvents
 }
 
 class KeyEvents implements IKeyEvents {
@@ -104,9 +105,16 @@ class KeyEvents implements IKeyEvents {
     return this
   }
 
+  registerOnTauri(targetKey: IKey|IKey[], action:()=>void): IKeyEvents {
+    if(Env.isTauri) {
+      this.register(targetKey, action)
+    }
+    return this
+  }
+
   private internalKeyboardEventHandler = (e:KeyboardEvent) => {
     if(e.defaultPrevented) return
-    // logger.debug(`${e.code} ${e.key} - shift:${e.shiftKey} ctrl:${e.ctrlKey} alt:${e.altKey} meta:${e.metaKey}`)
+    logger.debug(`${e.code} ${e.key} - shift:${e.shiftKey} ctrl:${e.ctrlKey} alt:${e.altKey} meta:${e.metaKey}`)
     for(const handler of this.handlers) {
       if(handler.handle(e)) {
         e.preventDefault()  // これどうだろう。。。tauriの動きと整合はとれるのか？

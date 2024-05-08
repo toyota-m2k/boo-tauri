@@ -17,7 +17,7 @@ export class HostInfo implements IHostInfo {
 
 
 export class HostInfoList {
-  private _list: HostInfo[]
+  private readonly _list: HostInfo[]
   private _isModified = false
   private _currentHostIndex = -1
 
@@ -96,13 +96,13 @@ export class HostInfoList {
     this._list.push(hostInfo)
     return true
   }
-  update(hostInfo: HostInfo): boolean {
-    const index = this._list.findIndex((info) => this.hostKey(info) === this.hostKey(hostInfo))
-    if(index < 0) return false
-    this._isModified = true
-    this._list[index] = hostInfo
-    return true
-  }
+  // update(hostInfo: HostInfo): boolean {
+  //   const index = this._list.findIndex((info) => this.hostKey(info) === this.hostKey(hostInfo))
+  //   if(index < 0) return false
+  //   this._isModified = true
+  //   this._list[index] = hostInfo
+  //   return true
+  // }
   remove(hostInfo:HostInfo): number {
     const index = this._list.findIndex((info) => this.hostKey(info) === this.hostKey(hostInfo))
     if(index < 0) return -1

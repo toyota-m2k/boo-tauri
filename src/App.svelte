@@ -3,7 +3,7 @@
   import Player from "./lib/Player.svelte";
   import TitleBar from "./lib/TitleBar.svelte";
   import {onMount, tick} from "svelte";
-  import {delay, launch} from "./lib/utils/Utils";
+  import {launch} from "./lib/utils/Utils";
   import SidePanel from './lib/SidePanel.svelte'
   import DebugView from "./lib/DebugView.svelte";
   import {logger} from "./lib/model/DebugLog";
@@ -49,9 +49,9 @@
   let sidePanelOverWrap = false
 
   // region Side Panel
-  // function showSidePanel(overwrap:boolean) {
+  // function showSidePanel(overlap:boolean) {
   //   sidePanel.style.left = '0'
-  //   if (overwrap) {
+  //   if (overlap) {
   //     mainContent.style.left = '0'
   //   } else {
   //     mainContent.style.left = `${sidePanelWidth}`
@@ -138,10 +138,15 @@
 
     globalKeyEvents
     .register(
-      keyFor({key: "KeyD", asCode: true}, {commandOrControl: true, shift: true}),
+      keyFor({key: "]", asCode: false}, {commandOrControl: true, shift: false}),
       () => {
       logger.enabled.update(it=>!it)
     })
+    .registerOnTauri(
+      keyFor({key: "Escape", asCode: false}),
+      () => {
+        tauriEx.closeApp()
+      })
     .register([
       keyFor({key: "F11", asCode: true}, {}, "W"),
       keyFor({key: "KeyF", asCode: true}, {commandOrControl: true, shift: true}),],

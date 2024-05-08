@@ -4,7 +4,6 @@
     ButtonGroup,
     Checkbox,
     Dropdown,
-    DropdownItem,
     Input,
     Label,
     Modal,
@@ -16,8 +15,6 @@
   import {type CompletionProc, viewModel} from "../model/ViewModel";
   import {onMount} from "svelte";
   import {createKeyEvents, keyFor, switchKeyEventCaster} from "../utils/KeyEvents";
-  import {ICON_VIDEO} from "../Icons";
-  import SvgIcon from "../common/SvgIcon.svelte";
 
   export let completion: CompletionProc<boolean>|undefined
   let addingHost = false

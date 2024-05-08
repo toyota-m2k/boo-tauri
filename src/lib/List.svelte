@@ -8,7 +8,6 @@
   const mediaList = viewModel.mediaList;
   const currentIndex = viewModel.currentIndex;
   let currentId:string|undefined
-  let tableBody:TableBody;
   $: currentId = viewModel.mediaItemAt($currentIndex)?.id
   $: if(currentId) {
     try {
@@ -36,7 +35,7 @@
 <div class="list-root bg-background text-background-on">
   {#if $mediaList.list.length !== 0}
     <Table hoverable={true}>
-      <TableBody bind:this={tableBody}>
+      <TableBody>
       {#each $mediaList.list as item, i (item.id)}
         <TableBodyRow id={item.id}>
           <TableBodyCell on:click={ (e)=>onSelect(e,i) } tdClass="cursor-pointer whitespace-nowrap font-medium text-xs common_surface">
