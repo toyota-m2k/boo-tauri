@@ -166,7 +166,22 @@
     const pos = viewModel.initialSeekPosition
     if(pos>0) {
       player.currentTime = pos/1000
+      viewModel.initialSeekPosition = 0
     }
+  }
+
+  function onError() {
+    logger.error("player:onError")
+    launch(async () => {
+      if(currentMediaItem) {
+        const url = await viewModel.recoverMediaUrl(currentMediaItem)
+        if(url && url!==currentMediaUrl) {
+          logger.info("player:reloading...  ")
+          viewModel.initialSeekPosition = currentPosition$.currentValue*1000
+          currentMediaUrl = url
+        }
+      }
+    })
   }
 
   function emergencyStop() {
@@ -209,6 +224,7 @@
       on:pause={onPause}
       on:ended={onEnded}
       on:loadeddata={onLoaded}
+      on:error={onError}
       autoplay
     >
       <track kind="captions" src="">
