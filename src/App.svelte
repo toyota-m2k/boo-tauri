@@ -11,6 +11,7 @@
   import {tauriEx} from "./lib/utils/TauriEx";
   import {Env} from "./lib/utils/Env";
   import {globalKeyEvents, keyFor} from "./lib/utils/KeyEvents";
+  import {eventWindowSizeChanged} from "./lib/model/GlobalEvents";
 
   const SidePanelThreshold = 1024
 
@@ -167,6 +168,14 @@
     //     tauriFullScreen(false)
     //   }
     // })
+
+    if(Env.isTauri) {
+      await tauriEx.setSizeChangeListener((type,width,height)=>{
+        logger.info(`tauri: sizeChanged: ${type} ${width}x${height}`)
+        eventWindowSizeChanged.emit(width,height)
+      })
+    }
+
   })
 
 

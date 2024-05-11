@@ -14,6 +14,7 @@
   import {globalKeyEvents, keyFor} from "./utils/KeyEvents";
   import {Env} from "./utils/Env";
   import {tauriEx} from "./utils/TauriEx";
+  import {eventPlayRequest, eventWindowSizeChanged} from "./model/GlobalEvents";
 
   let imageViewer: HTMLImageElement
   let player: HTMLVideoElement
@@ -198,7 +199,7 @@
     }
   }
 
-  onMount(async () => {
+  onMount(() => {
     globalKeyEvents
       .register(
         keyFor({key: "NumpadEnter", asCode: true}),
@@ -206,26 +207,30 @@
           emergencyStop?.()
         }
       )
-    if(Env.isTauri) {
-      // 最小化されるときに再生を止め、復元されるときに再生を再開する
-      let minimized = false
-      await tauriEx.setSizeChangeListener((type,width,height)=>{
-        logger.info(`tauri: sizeChanged: ${type} ${width}x${height}`)
-        if(width===0&&height===0) {
-          if(playing$.currentValue) {
-            logger.info("tauri: minimized")
-            minimized = true
-            stopPlay()
-          }
-        } else {
-          if(minimized) {
-            logger.info("tauri: restored")
-            minimized = false
-            startPlay()
-          }
+
+    let minimized = false
+    eventWindowSizeChanged.addListener((width,height)=>{
+      if(width===0&&height===0) {
+        if(playing$.currentValue) {
+          logger.info("tauri: minimized")
+          minimized = true
+          stopPlay()
         }
-      })
-    }
+      } else {
+        if(minimized) {
+          logger.info("tauri: restored")
+          minimized = false
+          startPlay()
+        }
+      }
+    })
+    eventPlayRequest.addListener((play)=>{
+      if(play) {
+        startPlay()
+      } else {
+        stopPlay()
+      }
+    })
   })
 
 </script>
