@@ -6,11 +6,11 @@
   import {onMount, tick} from 'svelte'
   import SlideShowPanel from "./SlideShowPanel.svelte";
   import {logger} from "./model/DebugLog";
-  import {fade, scale} from 'svelte/transition'
+  import {fade} from 'svelte/transition'
   import {TimingSwitch} from "./utils/TimingSwitch";
   import MediaControlPanel from "./MediaControlPanel.svelte";
   import ZoomView from "./ZoomView.svelte";
-  import {stopSlideShow, toggleSlideShow} from "./model/SlideShowModel";
+  import {startSlideShow, stopSlideShow, toggleSlideShow} from "./model/SlideShowModel";
   import {globalKeyEvents, keyFor} from "./utils/KeyEvents";
   import {Env} from "./utils/Env";
   import {tauriEx} from "./utils/TauriEx";
@@ -18,7 +18,7 @@
   let imageViewer: HTMLImageElement
   let player: HTMLVideoElement
   let currentIndex$: Readable<number> = viewModel.currentIndex
-  // let playMode$: Readable<string> = viewModel.playMode
+  let playMode$: Readable<string> = viewModel.playMode
   let currentMediaItem: IMediaItem | undefined
   let currentMediaUrl: string | undefined
   let currentMediaType: string | undefined
@@ -26,6 +26,9 @@
   $: currentMediaItem = viewModel.mediaItemAt($currentIndex$)
   $: currentMediaUrl = currentMediaItem ? viewModel.mediaUrl(currentMediaItem) : undefined
   $: currentMediaType = currentMediaItem?.media
+  $: if(currentMediaType==="p" && $playMode$==="sequential") {
+    startSlideShow()
+  }
   const playing$ = viewModel.playing
 
   // $: if(currentMediaItem && currentMediaItem.media==='p' && $playMode$==='sequential') {
@@ -108,6 +111,21 @@
     viewModel.playing.set(false)
   }
 
+  function startPlay() {
+    if(player) {
+      player.play()
+    } else {
+      startSlideShow()
+    }
+  }
+  function stopPlay() {
+    if(player) {
+      player.pause()
+    } else {
+      stopSlideShow()
+    }
+  }
+
   function togglePlay() {
     if(player) {
       if (player.paused) {
@@ -120,7 +138,7 @@
     }
   }
 
-  function onMouseEnterToPanel(e:MouseEvent) {
+  function onMouseEnterToPanel(/*e:MouseEvent*/) {
     logger.info("onMouseEnter")
     controlPanelTimingSwitch.cancel()
       if(!showControlPanel) {
@@ -180,7 +198,7 @@
     }
   }
 
-  onMount(() => {
+  onMount(async () => {
     globalKeyEvents
       .register(
         keyFor({key: "NumpadEnter", asCode: true}),
@@ -188,6 +206,26 @@
           emergencyStop?.()
         }
       )
+    if(Env.isTauri) {
+      // 最小化されるときに再生を止め、復元されるときに再生を再開する
+      let minimized = false
+      await tauriEx.setSizeChangeListener((type,width,height)=>{
+        logger.info(`tauri: sizeChanged: ${type} ${width}x${height}`)
+        if(width===0&&height===0) {
+          if(playing$.currentValue) {
+            logger.info("tauri: minimized")
+            minimized = true
+            stopPlay()
+          }
+        } else {
+          if(minimized) {
+            logger.info("tauri: restored")
+            minimized = false
+            startPlay()
+          }
+        }
+      })
+    }
   })
 
 </script>

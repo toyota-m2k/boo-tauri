@@ -87,6 +87,12 @@ class TauriEx {
     return this.os
   }
 
+  async setSizeChangeListener(listener: (type:string, width: number, height: number) => void): Promise<()=>void> {
+    return await getCurrent().onResized(e => {
+      listener(e.payload.type, e.payload.width, e.payload.height)
+    })
+  }
+
   async setFocusListener(listener: (focused: boolean) => void): Promise<()=>void> {
       return await getCurrent().onFocusChanged(({payload: focused}) => {
         listener(focused)
