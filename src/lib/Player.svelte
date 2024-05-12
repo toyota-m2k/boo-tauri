@@ -15,7 +15,9 @@
   import {Env} from "./utils/Env";
   import {tauriEx} from "./utils/TauriEx";
   import {eventPlayRequest, eventWindowSizeChanged} from "./model/GlobalEvents";
+  import {MouseConcealer} from "./model/MouseConcealer";
 
+  let playerContainer: HTMLDivElement
   let imageViewer: HTMLImageElement
   let player: HTMLVideoElement
   let currentIndex$: Readable<number> = viewModel.currentIndex
@@ -199,6 +201,8 @@
     }
   }
 
+  const mouseConcealer = new MouseConcealer()
+
   onMount(() => {
     globalKeyEvents
       .register(
@@ -231,12 +235,13 @@
         stopPlay()
       }
     })
+    mouseConcealer.start(playerContainer)
   })
 
 </script>
 
 
-<div class="player-container bg-background w-full h-full">
+<div bind:this={playerContainer} class="player-container bg-background w-full h-full">
   <ZoomView on:click={togglePlay}>
   {#if currentMediaType === "v"}
     <video

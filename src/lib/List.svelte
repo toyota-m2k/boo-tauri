@@ -4,6 +4,7 @@
   import {onMount} from "svelte";
   import {formatSize, formatTime} from './utils/Utils'
   import {globalKeyEvents, keyFor} from "./utils/KeyEvents";
+  import {eventWindowSizeChanged} from "./model/GlobalEvents";
 
   const mediaList = viewModel.mediaList;
   const currentIndex = viewModel.currentIndex;
@@ -28,6 +29,13 @@
     globalKeyEvents
     .register(keyFor({key: "ArrowUp", asCode: true}, {}), () => viewModel.prev())
     .register(keyFor({key: "ArrowDown", asCode: true}, {}), () => viewModel.next())
+
+    eventWindowSizeChanged.addListener(() => {
+      // tableBody.scrollToRow(currentId)
+      if(currentId) {
+        document.getElementById(currentId)?.scrollIntoView({behavior: "smooth", block: "nearest"})
+      }
+    })
   })
 
 </script>
