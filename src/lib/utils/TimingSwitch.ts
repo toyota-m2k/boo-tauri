@@ -13,6 +13,10 @@ export class TimingSwitch {
     this.interval = interval
   }
 
+  isAlive() {
+    return this.timerId!==0
+  }
+
   start() {
     logger.debug("TimingSwitch.start: timeout="+this.interval)
     this.cancel()

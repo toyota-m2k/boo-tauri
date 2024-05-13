@@ -13,7 +13,6 @@ import {settings} from "./Settings";
 const slideShowTimer = new TimingSwitch(settings.slideShowInterval*1000, ()=>{
   if(viewModel.playing.currentValue && viewModel.currentItem?.media==="p") {
     viewModel.next()
-    slideShowTimer.setInterval(settings.slideShowInterval*1000)
     return true
   } else {
     return false

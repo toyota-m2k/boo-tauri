@@ -11,6 +11,7 @@
   import {tauriEx} from "./lib/utils/TauriEx";
   import {Env} from "./lib/utils/Env";
   import {globalKeyEvents, keyFor} from "./lib/utils/KeyEvents";
+  import {eventWindowSizeChanged} from "./lib/model/GlobalEvents";
 
   const SidePanelThreshold = 1024
 
@@ -113,7 +114,7 @@
   }
 
   async function onWindowSizeChanged() {
-    // logger.info(`SizeChanged: w=${window.innerWidth}}`)
+    logger.info(`SizeChanged: w=${window.innerWidth}}`)
 
     if(!Env.isTauri || !await tauriEx.isFullscreen()) {
       // logger.info("!tauri || !fullscreen : innerWidth=" + window.innerWidth)
@@ -129,6 +130,10 @@
       }
     }
     updateBodyPadding()
+
+    if(!Env.isTauri) {
+      eventWindowSizeChanged.emit(window.innerWidth, window.innerHeight)
+    }
   }
 
     // viewModel.setHost(new HostInfo("Boo", "192.168.0.151", 6001))
@@ -167,6 +172,13 @@
     //     tauriFullScreen(false)
     //   }
     // })
+
+    if(Env.isTauri) {
+      await tauriEx.setSizeChangeListener((type,width,height)=>{
+        logger.info(`tauri: sizeChanged: ${type} ${width}x${height}`)
+        eventWindowSizeChanged.emit(width,height)
+      })
+    }
 
   })
 
