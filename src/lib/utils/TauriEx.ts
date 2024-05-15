@@ -5,6 +5,7 @@ import {BaseDirectory, createDir, type FsOptions, readTextFile, writeTextFile} f
 import {appDataDir} from "@tauri-apps/api/path";
 import {tick} from "svelte";
 import {delay} from "./Utils";
+import {TauriEvent} from "@tauri-apps/api/event";
 
 export type OSPlatForm = "L" | "M" | "W" | "U" | "LB" | "MB" | "WB" | "UB"
 
@@ -25,7 +26,7 @@ class TauriEx {
         await getCurrent().setFullscreen(false)
       }
     } catch (e) {
-      logger.error('Failed to set fullscreen')
+      logger.error('Failed to set fullscreen: ' + e)
     }
   }
 
@@ -36,7 +37,7 @@ class TauriEx {
       logger.debug("fullscreen: " + fs + ", maximized: " + max)
       return fs || max
     } catch (e) {
-      logger.error('Failed to get fullscreen')
+      logger.error('Failed to get fullscreen: ' + e)
       return false
     }
   }
@@ -46,6 +47,14 @@ class TauriEx {
       await getCurrent().minimize()
     } catch (e) {
       logger.error('Failed to minimize')
+    }
+  }
+  async isMinimized(): Promise<boolean> {
+    try {
+      return await getCurrent().isMinimized()
+    } catch (e) {
+      logger.error('Failed to get minimized')
+      return false
     }
   }
 
@@ -91,6 +100,10 @@ class TauriEx {
     return await getCurrent().onResized(e => {
       listener(e.payload.type, e.payload.width, e.payload.height)
     })
+  }
+
+  async setBlurListener(listener: () => void): Promise<()=>void> {
+    return await getCurrent().listen(TauriEvent.WINDOW_BLUR, listener)
   }
 
   async setFocusListener(listener: (focused: boolean) => void): Promise<()=>void> {
