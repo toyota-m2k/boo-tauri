@@ -62,6 +62,7 @@ export interface IViewModel {
   setHost: (hostInfo: HostInfo) => Promise<boolean>
   setCurrentIndex: (index: number) => boolean
   mediaUrl: (mediaItem: IMediaItem) => string
+  recoverMediaUrl: (mediaItem: IMediaItem) => Promise<string>
   mediaItemAt: (index: number) => IMediaItem | undefined
   next: () => boolean
   hasNext: () => boolean
@@ -141,6 +142,12 @@ class ViewModel implements IViewModel {
 
   // - カレントアイテムのURLを取得
   mediaUrl(mediaItem: IMediaItem): string {
+    return this.boo.getItemUrl(mediaItem)
+  }
+  async recoverMediaUrl(mediaItem: IMediaItem): Promise<string|undefined> {
+    if(!await this.boo.noop()) {
+      return undefined
+    }
     return this.boo.getItemUrl(mediaItem)
   }
 
