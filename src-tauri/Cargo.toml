@@ -1,6 +1,6 @@
 [package]
 name = "bootauri"
-version = "0.2.0"
+version = "0.3.0"
 description = "Boo Player with Tauri"
 authors = ["io.github.toyota32k"]
 edition = "2021"
@@ -11,7 +11,7 @@ edition = "2021"
 tauri-build = { version = "1", features = [] }
 
 [dependencies]
-tauri = { version = "1", features = [ "path-all", "os-all", "window-set-fullscreen", "window-hide", "window-start-dragging", "window-show", "window-unminimize", "window-minimize", "window-maximize", "window-close", "window-unmaximize", "fs-all", "shell-open"] }
+tauri = { version = "1", features = [ "window-set-focus", "path-all", "os-all", "window-set-fullscreen", "window-hide", "window-start-dragging", "window-show", "window-unminimize", "window-minimize", "window-maximize", "window-close", "window-unmaximize", "fs-all", "shell-open"] }
 serde = { version = "1", features = ["derive"] }
 serde_json = "1"
 

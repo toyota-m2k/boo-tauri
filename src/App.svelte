@@ -3,7 +3,7 @@
   import Player from "./lib/Player.svelte";
   import TitleBar from "./lib/TitleBar.svelte";
   import {onMount, tick} from "svelte";
-  import {launch} from "./lib/utils/Utils";
+  import {delay, launch} from "./lib/utils/Utils";
   import SidePanel from './lib/SidePanel.svelte'
   import DebugView from "./lib/DebugView.svelte";
   import {logger} from "./lib/model/DebugLog";
@@ -175,10 +175,28 @@
 
     if(Env.isTauri) {
       await tauriEx.setSizeChangeListener((type,width,height)=>{
-        logger.info(`tauri: sizeChanged: ${type} ${width}x${height}`)
+        // logger.info(`tauri: sizeChanged: ${type} ${width}x${height}`)
         eventWindowSizeChanged.emit(width,height)
       })
+      if(Env.isMac) {
+        // Macの場合はウィンドウを最小化したときに resizedイベントが発生しないので、blur イベントを利用する
+        await tauriEx.setBlurListener(() => {
+          logger.debug("onBlur")
+          launch(async ()=>{
+            await delay(1000) // onBlurが呼ばれたタイミングではまだ isMinimized() が true になっていないので、少し待つ
+            if(await tauriEx.isMinimized()) {
+              logger.debug("onBlur: minimized")
+              eventWindowSizeChanged.emit(0,0)
+            }
+          })
+        })
+        await tauriEx.setFocusListener((focus)=>{
+          logger.debug(`focus: ${focus}`)
+        })
+      }
+
     }
+
 
   })
 

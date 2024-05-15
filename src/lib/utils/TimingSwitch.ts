@@ -5,7 +5,7 @@ export class TimingSwitch {
     private interval:number,
     private callback:()=>boolean|void,
   ){
-    logger.debug("TimingSwitch: interval="+this.interval)
+    // logger.debug("TimingSwitch: interval="+this.interval)
   }
   private timerId:number = 0
 
@@ -18,7 +18,7 @@ export class TimingSwitch {
   }
 
   start() {
-    logger.debug("TimingSwitch.start: timeout="+this.interval)
+    // logger.debug("TimingSwitch.start: timeout="+this.interval)
     this.cancel()
     this.timerId = setTimeout(()=>{
       this.cancel()

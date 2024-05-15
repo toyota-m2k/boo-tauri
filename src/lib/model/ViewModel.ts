@@ -62,7 +62,7 @@ export interface IViewModel {
   setHost: (hostInfo: HostInfo) => Promise<boolean>
   setCurrentIndex: (index: number) => boolean
   mediaUrl: (mediaItem: IMediaItem) => string
-  recoverMediaUrl: (mediaItem: IMediaItem) => Promise<string>
+  recoverMediaUrl: (mediaItem: IMediaItem) => Promise<string|undefined>
   mediaItemAt: (index: number) => IMediaItem | undefined
   next: () => boolean
   hasNext: () => boolean
@@ -211,12 +211,7 @@ class ViewModel implements IViewModel {
     this.setCurrentIndex(index)
   }
 
-  private _initialSeekPosition = 0
-  get initialSeekPosition() {
-    const r = this._initialSeekPosition
-    this._initialSeekPosition = 0
-    return r
-  }
+  public initialSeekPosition = 0
 
   async setHost(hostInfo: HostInfo): Promise<boolean> {
     if (this.isBusy.currentValue) {
@@ -255,7 +250,7 @@ class ViewModel implements IViewModel {
           list.list.find((item, index) => {
             if(item.id === hostInfo.currentMediaId) {
               playIndex = index
-              this._initialSeekPosition = hostInfo.currentMediaPosition ?? 0
+              this.initialSeekPosition = hostInfo.currentMediaPosition ?? 0
               // logger.info(`found: ${item.id} ${playIndex} -- ${playPosition}`)
               return true
             }
