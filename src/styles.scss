@@ -307,7 +307,7 @@
   --color-secondary-variant-on: var(--color-gray-700);
 
   --color-accent: var(--color-indigo-a200);
-  --color-accent-on: var(--color-black);
+  --color-accent-on: var(--color-white);
 
   --color-background: var(--color-purple-50);
   --color-background-on: var(--color-gray-700);
@@ -318,14 +318,6 @@
 
   --color-error: var(--color-red-800);
   --color-error-on: var(--color-white);
-
-  .dark {
-    --color-background: var(--color-blue-gray-800);
-    --color-background-on: var(--color-white);
-
-    --color-surface: var(--color-blue-gray-900);
-    --color-surface-on: var(--color-white);
-  }
 
   .orange {
     --color-primary: var(--color-amber-800);
@@ -426,6 +418,16 @@
     --color-background: var(--color-teal-50);
     --color-surface: var(--color-light-green-50);
   }
+
+  .dark {
+    --color-background: var(--color-blue-gray-800);
+    --color-background-on: var(--color-white);
+
+    --color-surface: var(--color-blue-gray-900);
+    --color-surface-on: var(--color-white);
+  }
+
+
 
   .default_button {
     @apply text-primary-on bg-primary hover:bg-primary-variant hover:text-primary-variant-on;
