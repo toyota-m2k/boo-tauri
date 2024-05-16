@@ -7,7 +7,7 @@
   },
   "package": {
     "productName": "bootauri",
-    "version": "0.3.0"
+    "version": "0.4.0"
   },
   "tauri": {
     "allowlist": {
@@ -34,7 +34,8 @@
         "unminimize": true,
         "setFullscreen": true,
         "startDragging": true,
-        "setFocus": true
+        "setFocus": true,
+        "setTitle": true
       },
       "os": {
         "all": true

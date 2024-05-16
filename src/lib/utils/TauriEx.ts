@@ -1,5 +1,5 @@
 import {getCurrent} from '@tauri-apps/api/window'
-import {os} from '@tauri-apps/api'
+import {app, os} from '@tauri-apps/api'
 import {logger} from "../model/DebugLog";
 import {BaseDirectory, createDir, type FsOptions, readTextFile, writeTextFile} from "@tauri-apps/api/fs";
 import {appDataDir} from "@tauri-apps/api/path";
@@ -12,6 +12,18 @@ export type OSPlatForm = "L" | "M" | "W" | "U" | "LB" | "MB" | "WB" | "UB"
 export type FSType = "uav" | "appdata" | "app" | "default"
 
 class TauriEx {
+
+  async setupTitleBar() {
+    //const version = await import('../../../package.json').then((pkg) => pkg.version)
+    try {
+      const version = await app.getVersion()
+      // logger.info("version = " + version)
+      await getCurrent().setTitle(`BooTauri - ${version}`)
+    } catch(e) {
+      logger.error('Failed to set title bar: ' + e)
+    }
+
+  }
 
   async fullscreen(flag: boolean): Promise<void> {
     logger.info('fullscreen: ' + flag)
@@ -87,7 +99,7 @@ class TauriEx {
         this.os = 'MB'
       } else if (windowsPlatforms.indexOf(platform) !== -1) {
         this.os = 'WB'
-      } else if (!os && /Linux/.test(platform)) {
+      }   else if (!os && /Linux/.test(platform)) {
         this.os = 'LB'
       } else {
         this.os = 'UB'

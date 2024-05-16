@@ -8,6 +8,9 @@ export class Env {
     try {
       this._os = await tauriEx.getOS()
       this._isTauri = this._os[1] !== 'B'
+      if(this._isTauri) {
+        await tauriEx.setupTitleBar()
+      }
     } catch(e) {
       this._os = "U"
       this._isTauri = false
