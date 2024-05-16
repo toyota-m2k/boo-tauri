@@ -60,6 +60,7 @@ export interface IViewModel {
   // Methods
   initialize(): Promise<void>
   setHost: (hostInfo: HostInfo) => Promise<boolean>
+  reloadHost: () => Promise<void>
   setCurrentIndex: (index: number) => boolean
   mediaUrl: (mediaItem: IMediaItem) => string
   recoverMediaUrl: (mediaItem: IMediaItem) => Promise<string|undefined>
@@ -212,6 +213,14 @@ class ViewModel implements IViewModel {
   }
 
   public initialSeekPosition = 0
+
+  async reloadHost() {
+    const hostInfo = this.hostInfo.currentValue
+    if (hostInfo) {
+      await this.saveCurrentPosition(hostInfo)
+      await this.setHost(hostInfo)
+    }
+  }
 
   async setHost(hostInfo: HostInfo): Promise<boolean> {
     if (this.isBusy.currentValue) {

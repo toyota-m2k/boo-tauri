@@ -46,6 +46,10 @@
     }
   }
 
+  function reloadHost() {
+    launch(async ()=> viewModel.reloadHost())
+  }
+
 </script>
 
 <div class="flex flex-col justify-center items-center py-2 gap-1 bg-background">
@@ -71,7 +75,8 @@
       {/if}
     </ButtonGroup>
   {/if}
-  <Label>
+  <button type="button" class="h-7 pl-3 pr-3 rounded-2xl text-background-on hover:bg-surface hover:text-surface-on active:bg-accent active:text-accent-on"
+          on:click={reloadHost}>
     {$hostInfo?.displayName ?? "----" }
-  </Label>
+  </button>
 </div>
