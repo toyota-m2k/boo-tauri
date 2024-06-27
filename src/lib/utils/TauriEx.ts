@@ -1,11 +1,14 @@
-import {getCurrent} from '@tauri-apps/api/window'
+// import {getCurrent} from '@tauri-apps/api/webviewWindow'
 import {app, os} from '@tauri-apps/api'
 import {logger} from "../model/DebugLog";
-import {BaseDirectory, createDir, type FsOptions, readTextFile, writeTextFile} from "@tauri-apps/api/fs";
-import {appDataDir} from "@tauri-apps/api/path";
+// import {BaseDirectory, createDir, type FsOptions, readTextFile, writeTextFile} from "@tauri-apps/plugin-fs";
+import {appDataDir, BaseDirectory} from "@tauri-apps/api/path";
 import {tick} from "svelte";
 import {delay} from "./Utils";
 import {TauriEvent} from "@tauri-apps/api/event";
+import {getCurrent} from "@tauri-apps/api/window";
+import {createDir, type FsOptions} from "@tauri-apps/api/fs";
+import {type ReadFileOptions, readTextFile, writeTextFile} from "@tauri-apps/plugin-fs";
 
 export type OSPlatForm = "L" | "M" | "W" | "U" | "LB" | "MB" | "WB" | "UB"
 
@@ -168,7 +171,7 @@ class TauriEx {
 
   fsType: FSType|undefined = undefined
 
-  private async checkFsAndRead(filename:string, ops?: FsOptions): Promise<{result:boolean, data:string}> {
+  private async checkFsAndRead(filename:string, ops?: ReadFileOptions): Promise<{result:boolean, data:string}> {
     const result= {result: false, data: ""}
     try {
       result.data = await readTextFile(filename, ops)
@@ -194,7 +197,7 @@ class TauriEx {
     } else {
       try {
         const dir = await appDataDir()
-        return await readTextFile(filename, {dir: BaseDirectory.AppData})
+        return await readTextFile(filename, {baseDir: BaseDirectory.AppData})
       } catch(e) {
         logger.error('Read Failed (appdata): ' + e)
         return undefined
@@ -210,7 +213,7 @@ class TauriEx {
       try {
         const dir = await appDataDir()
         await createDir(dir, {recursive: true})
-        await writeTextFile(filename, data, {dir: BaseDirectory.AppData})
+        await writeTextFile(filename, data, {baseDir: BaseDirectory.AppData})
         return true
       } catch(e) {
         logger.error('Write Failed (appdata): ' + e)

@@ -2,44 +2,31 @@
   "build": {
     "beforeDevCommand": "npm run dev",
     "beforeBuildCommand": "npm run build",
-    "devPath": "http://localhost:1420",
-    "distDir": "../dist"
+    "frontendDist": "../dist",
+    "devUrl": "http://localhost:1420"
   },
-  "package": {
-    "productName": "bootauri",
-    "version": "0.4.2"
+  "bundle": {
+    "active": true,
+    "targets": "all",
+    "icon": [
+      "icons/32x32.png",
+      "icons/128x128.png",
+      "icons/128x128@2x.png",
+      "icons/icon.icns",
+      "icons/icon.ico"
+    ],
+    "publisher": "toyota32k",
+    "copyright": "Copyright (c) 2024 toyota32k",
+    "category": "Utility",
+    "shortDescription": "boo player application   "
   },
-  "tauri": {
-    "allowlist": {
-      "all": false,
-      "shell": {
-        "all": false,
-        "open": true
-      },
-      "fs": {
-        "all": true,
-        "scope": ["$APPDATA", "$APPDATA/settings.json"]
-      },
-      "path": {
-        "all": true
-      },
-      "window": {
-        "all": false,
-        "close": true,
-        "hide": true,
-        "show": true,
-        "maximize": true,
-        "minimize": true,
-        "unmaximize": true,
-        "unminimize": true,
-        "setFullscreen": true,
-        "startDragging": true,
-        "setFocus": true,
-        "setTitle": true
-      },
-      "os": {
-        "all": true
-      }
+  "productName": "bootauri",
+  "version": "0.4.2",
+  "identifier": "io.github.toyota32k.bootauri",
+  "plugins": {},
+  "app": {
+    "security": {
+      "csp": null
     },
     "windows": [
       {
@@ -47,26 +34,6 @@
         "width": 800,
         "height": 600
       }
-    ],
-    "security": {
-      "csp": null,
-      "dangerousUseHttpScheme": true
-    },
-    "bundle": {
-      "active": true,
-      "targets": "all",
-      "identifier": "io.github.toyota32k.bootauri",
-      "publisher": "toyota32k",
-      "copyright": "Copyright (c) 2024 toyota32k",
-      "category": "Utility",
-      "shortDescription": "boo player application   ",
-      "icon": [
-        "icons/32x32.png",
-        "icons/128x128.png",
-        "icons/128x128@2x.png",
-        "icons/icon.icns",
-        "icons/icon.ico"
-      ]
-    }
+    ]
   }
 }
