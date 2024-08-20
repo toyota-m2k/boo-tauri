@@ -36,7 +36,7 @@ class DebugLog implements IDebugLog {
     warn(message: string) { this.push(message, "warn") }
     error(message: string) { this.push(message, "error")  }
     clear() { this.messages.update(() => []) }
-    enabled = currentValueStore(false)
+    enabled = currentValueStore(true)
 }
 
 export const logger : IDebugLog = new DebugLog()
