@@ -1,6 +1,6 @@
 <script lang="ts">
   import {viewModel} from "./model/ViewModel";
-  import {Table, TableBody, TableBodyCell, TableBodyRow} from "flowbite-svelte";
+  // import {Table, TableBody, TableBodyCell, TableBodyRow} from "flowbite-svelte";
   import {onMount} from "svelte";
   import {formatSize, formatTime} from './utils/Utils'
   import {globalKeyEvents, keyFor} from "./utils/KeyEvents";
@@ -42,21 +42,19 @@
 
 <div class="list-root bg-background text-background-on">
   {#if $mediaList.list.length !== 0}
-    <Table hoverable={true}>
-      <TableBody>
+    <table class="w-full">
       {#each $mediaList.list as item, i (item.id)}
-        <TableBodyRow id={item.id}>
-          <TableBodyCell on:click={ (e)=>onSelect(e,i) } tdClass="cursor-pointer whitespace-nowrap font-medium text-xs common_surface">
+        <tr id={item.id}>
+          <td on:click={ (e)=>onSelect(e,i) } class="cursor-pointer whitespace-nowrap font-medium text-xs common_surface ">
             <div class="px-1 py-0.5" class:selected={currentId===item.id}>
               <div  >{item.name}</div>
               <div class:text-secondary-on-alt={currentId===item.id} class:text-surface-on-alt={currentId!==item.id}>{item.duration!==undefined ? formatTime(item.duration) : formatSize(item.size) }</div>
             </div>
-          </TableBodyCell>
-        </TableBodyRow>
+          </td>
+        </tr>
 <!--      <div role="button" tabindex="0" on:click={ ()=>viewModel.setCurrentIndex(i) }>{item.name} ({item.duration})</div>-->
       {/each}
-      </TableBody>
-    </Table>
+    </table>
   {:else}
     <div>No media found</div>
   {/if}
