@@ -33,6 +33,7 @@
     startSlideShow()
   }
   const playing$ = viewModel.playing
+  const muted$ = viewModel.muted
 
   // $: if(currentMediaItem && currentMediaItem.media==='p' && $playMode$==='sequential') {
   //     if(abortController) {
@@ -222,9 +223,11 @@
     globalKeyEvents
       .register(
         keyFor({key: "NumpadEnter", asCode: true}),
-        () => {
-          emergencyStop?.()
-        }
+        () => { emergencyStop?.() }
+      )
+      .register(
+        keyFor({key: "Space", asCode: true}, {}),
+        () => { togglePlay()}
       )
 
     let minimized = false
@@ -268,6 +271,7 @@
       src={currentMediaUrl}
       bind:duration={$duration$}
       bind:currentTime={$currentPosition$}
+      bind:muted={$muted$}
       on:play={onPlay}
       on:pause={onPause}
       on:ended={onEnded}

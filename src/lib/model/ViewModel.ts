@@ -38,6 +38,7 @@ export interface IViewModel {
   fitMode: CurrentValueStore<FitMode>
   playMode: CurrentValueReadable<PlayMode>
 
+  muted: CurrentValueStore<boolean>
   playing: CurrentValueStore<boolean>
   mediaScale: CurrentValueReadable<number>
 
@@ -82,6 +83,8 @@ export interface IViewModel {
   zoom(v: number): void
 
   saveCurrentPosition: (hostInfo?:HostInfo) => Promise<void>
+
+  toggleMute(): void
 }
 
 export type FitMode = "fit" | "fill" | "original"
@@ -186,6 +189,7 @@ class ViewModel implements IViewModel {
   photoSelected = currentValueStore<boolean>(true)
 
   playing = currentValueStore(false)
+  muted = currentValueStore(false)
 
   // Dialogs
   // settingsDialog = currentValueStore<boolean>(false)
@@ -407,6 +411,9 @@ class ViewModel implements IViewModel {
       // logger.info("saved")
       // await delay(3000)
     }
+  }
+  toggleMute() {
+    this.muted.set(!this.muted.currentValue)
   }
 }
 
